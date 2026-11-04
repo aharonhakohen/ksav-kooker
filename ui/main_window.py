@@ -57,9 +57,15 @@ class OCRWorker(QThread):
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("איבערקוק | IbberKuck — Offline Torah Notes OCR Studio (v1.0.0)")
+        self.setWindowTitle("כתב קוקער | Ksav Kooker — Offline Torah Notes OCR Studio (v1.0.0)")
         self.resize(1350, 850)
         self.setAcceptDrops(True)
+
+        # Set Window Icon
+        base_dir = getattr(sys, '_MEIPASS', os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+        icon_path = os.path.join(base_dir, "assets", "ksav_kooker.png")
+        if os.path.exists(icon_path):
+            self.setWindowIcon(QIcon(icon_path))
 
         # Core Engines
         self.learning_engine = LearningEngine()
@@ -112,7 +118,7 @@ class MainWindow(QMainWindow):
         bar.setSpacing(8)
 
         # App Brand
-        lbl_brand = QLabel("איבערקוק 📖")
+        lbl_brand = QLabel("כתב קוקער 📖")
         lbl_brand.setStyleSheet("font-size: 18px; font-weight: bold; color: #89b4fa; padding-right: 8px;")
         bar.addWidget(lbl_brand)
 
