@@ -1,12 +1,12 @@
 {
-  "appName": "IbberKuck",
-  "appNameHebrew": "איבערקוק",
+  "appName": "Ksav Kooker",
+  "appNameHebrew": "כתב קוקער",
   "tagline": "Offline Torah Notes & Handwriting OCR Studio",
-  "taglineYiddish": "דער קלוגער כתב-איבערקוקער פאר שיעורים און חידושי תורה",
+  "taglineYiddish": "דער קלוגער כתב-קוקער פאר שיעורים און חידושי תורה",
   "version": "1.0.0",
   "releaseDate": "2026-11-04",
-  "releaseTitle": "v1.0.0 - Initial Release: Offline Hebrew Handwriting OCR & Memory Engine",
-  "description": "IbberKuck is a fully offline, standalone desktop application designed specifically for yeshiva students, rebbeim, and scholars to transcribe handwritten Hebrew notes (cursive and print), proofread side-by-side with the original image, and export polished Word (.docx) documents. It features a self-learning memory engine that automatically learns from corrected mistakes to improve accuracy on every future scan.",
+  "releaseTitle": "v1.0.0 - Initial Release: Ksav Kooker (כתב קוקער)",
+  "description": "Ksav Kooker (כתב קוקער) is a fully offline, standalone desktop application designed specifically for yeshiva students, rebbeim, and scholars to transcribe handwritten Hebrew notes (cursive and print), proofread side-by-side with the original image, and export polished Word (.docx) documents. It features a self-learning memory engine that automatically learns from corrected mistakes to improve accuracy on every future scan.",
   "features": [
     "100% Offline OCR: Recognizes Hebrew cursive handwriting on standard CPU without internet.",
     "Multi-Image Support: Attach single or multiple pages of notes, reorder, or batch-scan.",
