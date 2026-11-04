@@ -1,0 +1,18 @@
+{
+  "appName": "IbberKuck",
+  "appNameHebrew": "איבערקוק",
+  "tagline": "Offline Torah Notes & Handwriting OCR Studio",
+  "taglineYiddish": "דער קלוגער כתב-איבערקוקער פאר שיעורים און חידושי תורה",
+  "version": "1.0.0",
+  "releaseDate": "2026-11-04",
+  "releaseTitle": "v1.0.0 - Initial Release: Offline Hebrew Handwriting OCR & Memory Engine",
+  "description": "IbberKuck is a fully offline, standalone desktop application designed specifically for yeshiva students, rebbeim, and scholars to transcribe handwritten Hebrew notes (cursive and print), proofread side-by-side with the original image, and export polished Word (.docx) documents. It features a self-learning memory engine that automatically learns from corrected mistakes to improve accuracy on every future scan.",
+  "features": [
+    "100% Offline OCR: Recognizes Hebrew cursive handwriting on standard CPU without internet.",
+    "Multi-Image Support: Attach single or multiple pages of notes, reorder, or batch-scan.",
+    "Side-by-Side Review: Smooth pan, zoom, and 90-degree rotate alongside a real-time Hebrew RTL editor.",
+    "Self-Learning Memory: Automatically identifies and remembers your corrections for all future scans.",
+    "Preloaded Yeshiva Lexicon: Built-in knowledge of common Talmudic abbreviations (Roshei Teivot) and terms.",
+    "Word Document Export: Generates clean, right-to-left formatted Microsoft Word (.docx) files ready for printing or sharing."
+  ]
+}
