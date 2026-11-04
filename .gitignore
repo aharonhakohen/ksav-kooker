@@ -1,0 +1,23 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# PyInstaller
+build/
+dist/
+*.exe
+
+# Temporary files & logs
+*.log
+*.tmp
+temp/
+scratch/
+
+# Local databases (will be created automatically at runtime)
+*.db
+*.sqlite
+
+# Large Model weights (downloaded / bundled locally)
+model_assets/*.pt
+model_assets/*.pkl
