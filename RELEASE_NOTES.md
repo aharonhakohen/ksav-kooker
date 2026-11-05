@@ -1,5 +1,39 @@
 # Release Notes — Ksav Kooker (כתב קוקער)
 
+## [v1.1.0] — 2026-11-04
+
+### Explanatory Title:
+**Multi-User Handwriting Profiles, Multi-Profile Stacking During OCR, and One-Click Backup/Restore Studio**
+
+### Summary in Plain English:
+Version `v1.1.0` introduces comprehensive multi-user handwriting profile management, multi-profile stacking during OCR, and automated backup/restore tools for Ksav Kooker. Different students, scribes, or family members often have distinct handwriting quirks and preferred abbreviations; users can now create isolated profiles for each person, switch profiles on-the-fly, or even stack multiple profiles together so the OCR engine checks rules from multiple people simultaneously during a scan. Furthermore, users can now create instant timestamped backups, save backups to USB or network storage, restore profiles with safety pre-backups, and merge colleagues' learned rules directly into their active profile.
+
+### What Changed & What Is Included:
+1. **Multi-User Handwriting Profiles (`core/learning_engine.py`)**:
+   - Store learned corrections in isolated databases per scribe/student/book inside `%APPDATA%\KsavKooker\profiles\`.
+   - Seamlessly creates, renames, duplicates, and deletes profiles.
+   - Backward-compatible: Automatically migrates existing single-database corrections to the default profile without data loss.
+2. **Top Toolbar Quick Profile Selector (`ui/main_window.py`)**:
+   - Added a profile dropdown and quick "+" button right in the main window header.
+   - Switch active profiles instantly while transcribing without needing to restart the app.
+3. **Multi-Profile Stacking (Simultaneous Multi-Person Rules)**:
+   - When transcribing notes, users can check multiple profiles in the Profile Manager.
+   - Ksav Kooker dynamically stacks rules from all checked profiles during OCR, allowing a student to benefit from both a shared Yeshiva profile and their personal handwriting profile simultaneously.
+4. **Backup & Restore Center (`ui/dictionary_dialog.py`)**:
+   - **Quick Backup**: One-click instant timestamped backup saved to `%APPDATA%\KsavKooker\backups`.
+   - **Save Backup As**: Export `.ksavbackup` files directly to a USB flash drive, external drive, or cloud folder.
+   - **Safe Restore**: Restore any `.ksavbackup`, `.db`, or `.json` file as a new profile or over the active profile (with automatic safety pre-backup).
+   - **Rule Merging**: Import and combine a colleague's or teacher's rules into your active profile without overwriting existing rules.
+5. **Modern Tabbed Memory Studio**:
+   - Redesigned the Memory Manager dialog into three organized tabs:
+     - **Tab 1: 📚 כללים נלמדים בפרופיל (Active Profile Rules)**
+     - **Tab 2: 👥 פרופילים ומשתמשים (Profile Manager & Stacking Checkboxes)**
+     - **Tab 3: 💾 גיבוי ושחזור (Backup, Restore & JSON Sharing)**
+6. **Installer Package Optimization (`build_exe.py`)**:
+   - Excluded unused sub-packages (`transformers`, `scipy`, `matplotlib`, `pandas`, `onnxruntime`, `av`), significantly trimming the standalone installer and download size.
+
+---
+
 ## [v1.0.1] — 2026-11-04
 
 ### Explanatory Title:
@@ -48,9 +82,6 @@ This is the inaugural release of **Ksav Kooker** (`v1.0.0`), a specialized, 100%
    - Styled with Hebrew typography (David/Arial fonts), bidirectional cursor support, and a quick-insertion toolbar for common Yeshiva terms.
    - Live mistake tracking counter comparing current edits to raw scan.
 6. **Microsoft Word (.docx) Exporter**:
-   - One-click export into formatted Word documents with 1-inch margins, centered title/author headers, bold shiur markers, and page breaks.
-7. **3D Logo & Emblem Branding**:
-   - High-resolution 3D icon, heraldic shield, and banner featuring gold trim, an open sefer, holographic cyan OCR scanning beam, and dual-language Hebrew/English typography ("כתב קוקער / KSAV KOOKER").
-   - Integrated into startup splash screen, taskbar icon, about dialog, and the Windows installer wizard.
-8. **Self-Contained Windows Setup Wizard & Portable Packages**:
-   - Packaged as an offline setup wizard (`KsavKooker_Setup.exe`) and portable zip archive (`KsavKooker-v1.0.0-Windows.zip`) containing Python runtime, PyTorch CPU, PyQt6, and neural weights.
+   - Generates professionally styled Right-To-Left (RTL) `.docx` files with 1-inch margins, centered title headings, bold shiur markers, and notebook page breaks.
+7. **Packaging & Distribution**:
+   - Packaged offline self-extracting installer (`KsavKooker_Setup.exe`) and portable zip archive (`KsavKooker-v1.0.0-Windows.zip`).

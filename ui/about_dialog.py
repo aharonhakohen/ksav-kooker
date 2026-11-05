@@ -46,7 +46,7 @@ class AboutDialog(QDialog):
         title_box.addWidget(lbl_title)
 
         # Load version info
-        ver_str = "1.0.1"
+        ver_str = "1.1.0"
         try:
             ver_path = os.path.join(base_dir, "version.json")
             if os.path.exists(ver_path):

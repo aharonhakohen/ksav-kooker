@@ -1,4 +1,4 @@
-# Ksav Kooker (כתב קוקער) — v1.0.1
+# Ksav Kooker (כתב קוקער) — v1.1.0
 ### Offline Torah Notes & Hebrew Handwriting OCR Studio
 *דער קלוגער כתב-קוקער פאר שיעורים און חידושי תורה*
 
@@ -28,26 +28,30 @@ Ksav Kooker features a **continuous self-learning memory engine**: when you corr
    - Zero internet connectivity required: full privacy, zero cloud uploads, completely secure for personal notebooks.
    - Built-in character n-gram and word unigram language models for disambiguating visually similar Hebrew letters.
 
-2. **Self-Learning Mistake Memory Engine**
-   - **Continuous Learning**: Editing words and clicking **"שמור ולמד תיקונים"** triggers bidirectional sequence alignment to detect exact corrections.
-   - **Persistent Local Database**: Stores user preferences and learned substitutions in a local SQLite database (`learned_corrections.db`).
-   - **Automatic Future Correction**: Pre-processes raw OCR output through the learned rule registry before presenting the text.
-   - **Preloaded Yeshiva / Rabbinic Lexicon**: Out of the box, recognizes over 50 common Talmudic abbreviations (*ראשי תיבות*) including:
-     - רש"י, תוס', רמב"ם, ראב"ד, רי"ף, רא"ש, גמ', משנה, ברייתא
-     - נפק"מ, קמ"ל, סד"א, ח"נ, נ"ש, ברה"ר, ברה"י, עיי"ש, עכ"ד, וכו'
+2. **Multi-User Handwriting Profiles & Stacking (New in v1.1.0)**
+   - **Isolated Profiles**: Create dedicated learning profiles for different people (individual students, scribes, rebbeim, or notebook styles) stored in `%APPDATA%\KsavKooker\profiles\`.
+   - **Top-Bar Profile Switcher**: Instantly switch the active profile directly from the top toolbar without restarting.
+   - **Multi-Profile Stacking**: Check multiple profiles simultaneously in the profile manager; Ksav Kooker combines rules from all enabled people during OCR scans.
+   - **Preloaded Yeshiva / Rabbinic Lexicon**: Out of the box, recognizes over 50 common Talmudic abbreviations (*ראשי תיבות*) including רש"י, תוס', רמב"ם, ראב"ד, רי"ף, רא"ש, גמ', נפק"מ, קמ"ל, ח"נ, נ"ש, סד"א, ברה"ר, ברה"י, etc.
 
-3. **Modern, Clean, High-DPI Desktop Interface**
+3. **Backup, Restore & Knowledge Merging Center (New in v1.1.0)**
+   - **Instant Quick Backup**: One-click timestamped `.ksavbackup` saved directly to your local backups repository.
+   - **Custom Save & Restore**: Save backups to USB drives or network storage, and restore safely with automatic pre-backup protection.
+   - **Rule Merging**: Import and combine a colleague's or teacher's learned rules directly into your active profile without erasing your existing rules.
+   - **JSON Sharing**: Export/import clean JSON files for easy sharing.
+
+4. **Modern, Clean, High-DPI Desktop Interface**
    - **Side-by-Side Review**: Compare original handwritten notes on the left directly against transcribed text on the right.
    - **Multi-Image Navigation**: Attach one or multiple pages (via drag-and-drop or file dialog) with thumbnail selector.
-   - **Document Viewer Tools**: Smooth mouse-wheel zoom, panning, 90° clockwise/counter-clockwise rotation (ideal for phone photos), and an ink-enhancer filter to make faint pencil notes legible.
+   - **Document Viewer Tools**: Smooth mouse-wheel zoom, panning, 90° rotation, and an ink-enhancer filter to make faint pencil notes legible.
    - **Hebrew Right-To-Left (RTL) Editor**: Full bidirectional cursor support, David/Arial fonts, live character/word counters, and a quick-insertion Roshei Teivot toolbar.
 
-4. **Professional Microsoft Word (.docx) Export**
+5. **Professional Microsoft Word (.docx) Export**
    - Generates properly tagged Right-to-Left Word documents with 1-inch margins, centered title headers, bold shiur markers, and page breaks between notebook pages.
 
-5. **Self-Contained Setup Wizard & Portable Distribution**
+6. **Self-Contained Setup Wizard & Portable Distribution**
    - Available as a standalone Windows Setup Wizard (`KsavKooker_Setup.exe`) that installs to `%LocalAppData%\Programs\Ksav Kooker` without admin rights.
-   - Also available as a zero-install portable zip package (`KsavKooker-v1.0.0-Windows.zip`).
+   - Also available as a zero-install portable zip package (`KsavKooker-v1.1.0-Windows.zip`).
 
 ---
 
@@ -59,7 +63,7 @@ Ksav Kooker features a **continuous self-learning memory engine**: when you corr
 3. Launch **Ksav Kooker** from your Desktop or Start Menu.
 
 ### Option 2: Portable Zip
-1. Download **`KsavKooker-v1.0.0-Windows.zip`**.
+1. Download **`KsavKooker-v1.1.0-Windows.zip`**.
 2. Unzip to any folder on your laptop or USB drive.
 3. Double-click **`KsavKooker.exe`**.
 
@@ -68,26 +72,27 @@ Ksav Kooker features a **continuous self-learning memory engine**: when you corr
 ## 📝 User Workflow
 
 ```
-[ Attach Photos ] ──> [ Rotate / Orient ] ──> [ ⚡ Scan OCR ] 
-        │
-        ▼
-[ Side-by-Side Proofread ] ──> [ 💾 Save & Learn Corrections ] ──> [ 📝 Export .docx ]
+[ Attach Photos ] ──> [ Select Profile ] ──> [ Rotate / Orient ] ──> [ ⚡ Scan OCR ] 
+                                                                           │
+                                                                           ▼
+[ 📝 Export .docx ] <── [ 💾 Save & Learn Corrections ] <── [ Side-by-Side Proofread ]
 ```
 
-1. **Attach Photos**: Click **"📁 צרף תמונות"** or drag-and-drop JPG/PNG/WEBP images into the window.
-2. **Rotate if needed**: If a photo was taken sideways, click **"↻ 90°"** to orient it upright.
-3. **Scan (OCR)**: Click **"⚡ סרוק עמוד נוכחי"** (or **"⚡⚡ סרוק הכל"** for batch scans).
-4. **Proofread & Correct**: Read through the transcription in the right panel side-by-side with your handwritten page, correcting any typos or adding missing words.
-5. **Learn**: Click **"💾 שמור ולמד תיקונים"**. The system immediately absorbs your corrections into its memory bank.
-6. **Export**: Click **"📝 ייצוא לוורד (.docx)"** to create your formatted Word document.
+1. **Select Profile**: Select your active handwriting profile from the **👤 כתב יד** dropdown in the top bar.
+2. **Attach Photos**: Click **"📁 צרף תמונות"** or drag-and-drop JPG/PNG/WEBP images into the window.
+3. **Rotate if needed**: If a photo was taken sideways, click **"↻ 90°"** to orient it upright.
+4. **Scan (OCR)**: Click **"⚡ סרוק עמוד נוכחי"** (or **"⚡⚡ סרוק הכל"** for batch scans).
+5. **Proofread & Correct**: Read through the transcription side-by-side with the original photo, correcting typos.
+6. **Learn**: Click **"💾 שמור ולמד תיקונים"**. The system immediately saves your corrections into the active profile.
+7. **Export**: Click **"📝 ייצוא לוורד (.docx)"** to create your formatted Word document.
 
 ---
 
-## 🧠 Memory & Rules Manager
+## 🧠 Memory, Profiles & Backup Studio
 Click **"🧠 מנהל הזיכרון"** in the top bar to:
-- View all active learned replacement rules and frequency counts.
-- Search, add manual rules, or remove rules.
-- Export or import the dictionary as a `.json` backup file.
+- **📚 כללים נלמדים**: View, search, edit, or delete active rules in the current profile.
+- **👥 פרופילים ומשתמשים**: Manage separate profiles for different scribes or students, and check boxes to enable multi-profile stacking.
+- **💾 גיבוי ושחזור**: Perform instant timestamped backups, restore from files, or merge external rules into your active profile.
 
 ---
 
@@ -111,49 +116,14 @@ pip install -r requirements.txt
 python main.py
 ```
 
-### Building the Standalone Executable & Installer
+### Building the Standalone Installer
 ```bash
 python build_exe.py
 ```
-Outputs:
-- `dist/KsavKooker/KsavKooker.exe` (Standalone application directory)
-- `dist/KsavKooker_Setup.exe` (Self-contained Windows Setup Wizard)
-- `dist/KsavKooker-v1.0.0-Windows.zip` (Portable release archive)
 
 ---
 
-## 📂 Project Architecture
-
-```
-TorahNotesOCR/
-├── assets/                  # 3D branding icons and banners (PNG, ICO)
-├── core/
-│   ├── hebocr/             # Neural handwriting recognition & language models
-│   ├── docx_exporter.py    # RTL Microsoft Word document generator
-│   ├── learning_engine.py  # SQLite-backed self-learning correction engine
-│   └── ocr_engine.py       # Pre-processing, segmentation & recognition pipeline
-├── installer/
-│   └── setup_gui.py        # Modern Windows installation wizard GUI
-├── model_assets/           # Model weights (Mishkefet-v1), charset, and lexicon
-├── public/                 # Version metadata
-├── ui/                     # PyQt6 high-DPI modern graphical interface
-│   ├── about_dialog.py     # About dialog with 3D logo
-│   ├── dictionary_dialog.py# Memory and Roshei Teivot manager dialog
-│   ├── image_viewer.py     # Interactive zoomable/rotatable image viewer
-│   ├── main_window.py      # Dual-pane main application layout
-│   ├── splash_screen.py    # Animated frameless startup splash screen
-│   ├── text_editor.py      # RTL Hebrew text editor with mistake tracker
-│   └── theme.py            # Modern dark/light styling system
-├── build_exe.py            # Automated build script for PyInstaller
-├── main.py                 # Application entry point
-├── requirements.txt        # Python package dependencies
-├── LICENSE                 # MIT License
-├── README.md               # User & developer documentation
-└── RELEASE_NOTES.md        # Plain English release changelog
-```
-
----
-
-## ⚖️ License
-This project is licensed under the [MIT License](LICENSE).
-Developed for Torah u'Mesorah Lakewood Teachers Center (TU / LTC).
+## 📄 License & Attribution
+- Licensed under the [MIT License](LICENSE).
+- Powered by PyTorch, OpenCV, and the Mishkefet neural OCR architecture.
+- Developed for Torah u'Mesorah Lakewood Teachers Center & the Yeshiva community.

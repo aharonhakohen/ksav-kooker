@@ -3,17 +3,17 @@
   "appNameHebrew": "כתב קוקער",
   "tagline": "Offline Torah Notes & Handwriting OCR Studio",
   "taglineYiddish": "דער קלוגער כתב-קוקער פאר שיעורים און חידושי תורה",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "releaseDate": "2026-11-04",
-  "releaseTitle": "v1.0.1 - Brand Visual Upgrade: Dual-Page Handwriting-to-Typed Transformation Stream",
-  "description": "Ksav Kooker (כתב קוקער) v1.0.1 updates the visual identity across the entire application to the dynamic 'Dual-Page Transformation Stream' emblem. The new 3D design vividly illustrates authentic handwritten yeshiva notes streaming and reconstituting into a clean, razor-sharp printed sefer page.",
+  "releaseTitle": "v1.1.0 — Multi-User Handwriting Profiles, Multi-Profile Stacking & One-Click Backup/Restore Studio",
+  "description": "Ksav Kooker (כתב קוקער) v1.1.0 adds support for multi-user handwriting profiles, multi-profile stacking during OCR scans, and comprehensive backup, restore, and rule-merging tools. Each student, scribe, or book can have an isolated learning memory bank, switch on the fly from the top toolbar, or combine rules from multiple people in a single scan.",
   "features": [
-    "New Visual Identity: Upgraded all icons, splash screens, dialogs, and setup wizard to the 3D Dual-Page Transformation Stream emblem.",
-    "100% Offline OCR: Recognizes Hebrew cursive handwriting on standard CPU without internet.",
-    "Multi-Image Support: Attach single or multiple pages of notes, reorder, or batch-scan.",
-    "Side-by-Side Review: Smooth pan, zoom, and 90-degree rotate alongside a real-time Hebrew RTL editor.",
-    "Self-Learning Memory: Automatically identifies and remembers your corrections for all future scans.",
-    "Preloaded Yeshiva Lexicon: Built-in knowledge of common Talmudic abbreviations (Roshei Teivot) and terms.",
-    "Word Document Export: Generates clean, right-to-left formatted Microsoft Word (.docx) files ready for printing or sharing."
+    "Multi-User Handwriting Profiles: Create, rename, duplicate, or delete isolated learning profiles for different people (e.g., individual students, rebbeim, or different notebook styles).",
+    "Instant Profile Switching: Switch active profiles on the fly directly from the top toolbar without restarting the application.",
+    "Multi-Profile Stacking: Check checkboxes in the profile manager to enable multiple profiles simultaneously; Ksav Kooker combines rules from all checked people during OCR scans.",
+    "One-Click Backup & Restore: Create timestamped .ksavbackup files with a single click, save backups to USB or cloud drives, and safely restore profiles.",
+    "Knowledge Merging: Seamlessly merge a colleague's or teacher's learned rules and abbreviations into your active profile without erasing your existing rules.",
+    "Optimized Package Size: Excluded unused sub-libraries, reducing memory footprint and download size.",
+    "100% Offline & Roaming Profile Compatible: Fully functional with zero internet connection; profiles roam seamlessly in Windows Server Active Directory domain environments."
   ]
 }
