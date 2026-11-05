@@ -19,9 +19,9 @@ def get_version() -> str:
     vpath = os.path.join(BASE_DIR, "version.json")
     try:
         with open(vpath, "r", encoding="utf-8") as f:
-            return json.load(f).get("version", "1.1.0")
+            return json.load(f).get("version", "1.1.2")
     except Exception:
-        return "1.1.0"
+        return "1.1.2"
 
 def create_payload_zip(src_dir: str, out_zip: str):
     print(f"\nCompressing offline application payload to {out_zip}...")
@@ -56,6 +56,8 @@ def build(force_rebuild: bool = False):
         os.path.join(BASE_DIR, "ui", "main_window.py"),
         os.path.join(BASE_DIR, "ui", "dictionary_dialog.py"),
         os.path.join(BASE_DIR, "ui", "text_editor.py"),
+        os.path.join(BASE_DIR, "ui", "theme.py"),
+        os.path.join(BASE_DIR, "installer", "setup_gui.py"),
         os.path.join(BASE_DIR, "ui", "i18n.py"),
         os.path.join(BASE_DIR, "core", "learning_engine.py"),
         ico_path

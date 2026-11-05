@@ -1,5 +1,45 @@
 # Release Notes — Ksav Kooker (כתב קוקער)
 
+## [v1.1.2] — 2026-11-05
+
+### Explanatory Title:
+**High-Contrast Installer & Streamlined Studio UX Overhaul (Native Menu Bar, Stacked Dropdowns, Fixed Font Clipping)**
+
+### Summary in Plain English:
+Version `v1.1.2` delivers a comprehensive visual and user experience overhaul for **Ksav Kooker**. It resolves the "washed out" low-contrast text reported in the Windows Setup Wizard, ensures the custom 3D dual-page emblem is always displayed, and reorganizes the main studio interface to eliminate button squishing, font truncation, and empty square character boxes. Actions have been grouped into intuitive stacked dropdowns (`⚡ Scan ▾`, `📄 Export ▾`, and a unified Profile Hub), complemented by a native Windows Menu Bar (`File`, `Scan & OCR`, `Learning & Profiles`, `View`, `Language`, `Help`) with industry-standard keyboard shortcuts.
+
+### What Changed & What Is Included:
+1. **High-Contrast Windows Setup Wizard (`installer/setup_gui.py`)**:
+   - **Fixed Washed-Out Text**: Replaced pale colors on white wizard pages with deep slate WCAG AAA typography (`#0f172a` headings, `#1e293b` body text, `#047857` version badge).
+   - **Guaranteed 3D Logo Rendering**: Implemented PyInstaller `sys._MEIPASS` dynamic resource locator so the brand emblem always loads correctly inside the compiled single-file installer.
+   - **Standard Windows Controls**: Form directory inputs now display crisp white backgrounds with slate borders, blue focus outlines, and standard checkbox indicators.
+   - **High-Visibility Navigation**: Primary `Next >` / `Finish` buttons styled in bold blue (`#2563eb`) and emerald green (`#16a34a`) with white text.
+2. **Native Windows Menu Bar (`ui/main_window.py`)**:
+   - Added a full top menu bar (`QMenuBar`) providing structured access to every feature:
+     - **File**: Add Pages (`Ctrl+O`), Remove Page (`Del`), Clear All, Export to Word (`Ctrl+E`), Export to Text, Exit (`Alt+F4`).
+     - **Scan & OCR**: Scan Current Page (`F5`), Scan All Pages (`Shift+F5`), Enhance Ink Contrast.
+     - **Learning & Profiles**: Save Corrections (`Ctrl+L`), Memory Studio (`Ctrl+M`), Create New Profile.
+     - **View**: Rotate Clockwise (`Ctrl+]`), Rotate Counter-Clockwise (`Ctrl+[`), Zoom In (`Ctrl++`), Zoom Out (`Ctrl+-`), Fit Window (`Ctrl+0`), Dark/Light Theme (`Ctrl+T`).
+     - **Language**: English (`Ctrl+Shift+E`), עברית (`Ctrl+Shift+H`).
+     - **Help**: User Guide & Documentation (`F1`), About Ksav Kooker.
+3. **Streamlined Top Action Toolbar**:
+   - Replaced overcrowded 13-button toolbar with an ergonomic, uncluttered layout:
+     - **Brand Hub**: 3D emblem and non-collapsible `Ksav Kooker` title.
+     - **`📁 Add Pages`**: Primary entry point.
+     - **`⚡ Scan ▾` (Stacked Dropdown)**: Click directly to scan the current page (`F5`), or click the arrow for `Scan All Pages (Shift+F5)`.
+     - **`💾 Save`**: Instantly records proofreading edits into the self-learning memory engine (`Ctrl+L`).
+     - **`📄 Export ▾` (Stacked Dropdown)**: Clean menu to export to Microsoft Word (`.docx`) or Plain Text (`.txt`).
+     - **Unified Profile Hub**: Shows active profile name and learned rule count (e.g., `👤 ברירת מחדל (כללי) (66) ▾`). Clicking lets the user switch profiles, add a new profile, or open the Memory Studio.
+     - **Direct Shortcuts**: Quick access to `🧠 Memory`, `🌓` theme switch, `🌐 Language` pill, and `ℹ` About.
+4. **Sidebar & Viewer Font / Icon Clipping Fix (`ui/theme.py`, `ui/main_window.py`)**:
+   - Reduced button horizontal padding and refined CSS so small buttons (`+ Add`, `Delete`, `↻ 90°`, `↺ 90°`, `✨ Ink Enhancer`, `⛶ Fit`, `+`, `−`) render with full text and proper glyphs without clipping into empty squares.
+5. **Categorized Torah Abbreviations Menu (`ui/text_editor.py`)**:
+   - Sprawling inline buttons replaced with top 3 favorites (`[בס"ד] [רש"י] [תוס']`) and a stacked `[⚡ Torah Abbreviations ▾]` menu categorized into *Seforim & Rishonim* (רמב"ם, ראב"ד, רי"ף, רא"ש, etc.) and *Talmudic Terms* (נפק"מ, קמ"ל, סד"א, ח"נ, etc.).
+6. **English Default Localization (`ui/i18n.py`)**:
+   - Default interface launches in English with full bilingual parity.
+
+---
+
 ## [v1.1.1] — 2026-11-04
 
 ### Explanatory Title:
