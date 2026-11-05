@@ -1,5 +1,32 @@
 # Release Notes — Ksav Kooker (כתב קוקער)
 
+## [v1.2.0] — 2026-11-05
+
+### Explanatory Title:
+**In-App Update Checker (GitHub Cloud & Local Network Share Channels) with Clean Upgrade Process**
+
+### Summary in Plain English:
+Version `v1.2.0` introduces a dedicated **"Check for Updates..."** tool inside the **Help** menu (<kbd>Ctrl+U</kbd>), paired with an intelligent upgrade engine that resolves file-locking conflicts and purges obsolete application binaries. Users and network administrators can configure where Ksav Kooker looks for updates: either from the official **GitHub Cloud** (for internet-connected systems) or from a **Local Network Share / Windows Server Domain Share / USB Drive** (such as `\\newltcserver\Installs\KsavKooker` or a mapped drive) for offline institutional environments. When upgrading via the setup executable, the installer automatically detects any active instance of Ksav Kooker and closes it, removes old binary files from the program directory, and ensures that personal handwriting profiles, mistake memories, custom dictionaries, and backups in `%APPDATA%` are completely preserved and untouched.
+
+### What Changed & What Is Included:
+1. **In-App Update Checker (`ui/update_dialog.py`)**:
+   - Added **Help > Check for Updates...** (<kbd>Ctrl+U</kbd>) to the main menu bar.
+   - Dual-channel update architecture:
+     - **Official GitHub Cloud**: Fetches `version.json` over HTTPS and displays release notes and download links.
+     - **Local Network Share / USB / Server Folder**: Scans a UNC path (e.g. `\\newltcserver\Installs\KsavKooker`) or local drive containing `version.json` and `KsavKooker_Setup.exe`.
+   - Rich update card displaying the new version number, release date, plain-English summary, and bulleted features list.
+   - One-click action buttons: Launch local installer directly or open the web release page.
+   - User configuration saved to `%APPDATA%\KsavKooker\ui_settings.json`.
+2. **Clean Upgrade Process & Process-Lock Protection (`installer/setup_gui.py`)**:
+   - **Active Process Detection**: Setup checks if `KsavKooker.exe` is currently running and terminates it before extracting files, completely avoiding Windows `PermissionError` file-locking failures.
+   - **Obsolete Binary Purge**: When upgrading over an existing installation, setup purges old application binaries (`_internal/`, old `.dll`, `.pyd`, and `.exe` files) before extracting the new release, preventing orphaned file bloat and library mismatch errors.
+   - **Guaranteed User Data Isolation**: Explicitly isolates application program files from user data; all personal handwriting profiles, mistake memory rules, and backups stored in `%APPDATA%\KsavKooker` remain 100% untouched.
+   - **Upgrade Mode Indicator**: The setup wizard displays a clear green confirmation banner when an existing installation is detected, assuring the user that their data is safe.
+3. **Automated Deployment with `version.json` (`build_exe.py`)**:
+   - Deploy script now copies `version.json` alongside `KsavKooker_Setup.exe` into destination staging folders (e.g. `M:\My Drive\Personal\Dovid Shmaryahu\Notes App`), enabling instant offline update checking across network workstations.
+
+---
+
 ## [v1.1.2] — 2026-11-05
 
 ### Explanatory Title:

@@ -55,6 +55,40 @@ STRINGS = {
         "menu_help": "Help",
         "menu_help_guide": "User Guide & Tips (F1)",
         "menu_help_about": "About Ksav Kooker...",
+        "menu_help_check_updates": "Check for Updates... (Ctrl+U)",
+
+        # Update Dialog
+        "update_dialog_title": "Check for Updates",
+        "update_tab_status": "Update Status",
+        "update_tab_settings": "Update Source & Settings",
+        "update_curr_version": "Installed Version: v{version}",
+        "update_checking_msg": "Checking for updates from {source}...",
+        "update_up_to_date_hdr": "You're Running the Latest Version!",
+        "update_up_to_date_sub": "Ksav Kooker v{version} is up to date. No updates are currently needed.",
+        "update_available_hdr": "⚡ New Version Available: v{version}",
+        "update_release_date": "Released: {date}",
+        "update_whats_new": "What's New in This Release:",
+        "update_btn_check_again": "Check Again",
+        "update_btn_run_installer": "🚀 Launch Installer Now",
+        "update_btn_open_folder": "📁 Open Staging Folder",
+        "update_btn_open_web": "🌐 Open Release on GitHub",
+        "update_btn_close": "Close",
+        "update_err_hdr": "Unable to Check for Updates",
+        "update_err_folder_not_found": "Update directory not found: {folder}",
+        "update_err_no_version_json": "version.json was not found in directory: {folder}",
+        "update_err_invalid_data": "Received invalid update information from server.",
+        "update_err_network": "Network connection error: {err}",
+        "update_source_group": "Select Where to Look for Updates:",
+        "update_source_web": "Official GitHub Cloud (Online)",
+        "update_source_web_desc": "Checks GitHub for the latest official public releases (requires internet connection).",
+        "update_source_local": "Local Network Share / Folder / USB (Offline & Domain)",
+        "update_source_local_desc": "Checks a local folder or UNC server share (e.g. \\\\newltcserver\\share or M:\\...) containing version.json and KsavKooker_Setup.exe.",
+        "update_folder_path_lbl": "Network / Local Staging Folder Path:",
+        "update_folder_browse_btn": "Browse...",
+        "update_auto_check": "Automatically check for updates on startup",
+        "update_save_settings_btn": "Save Settings & Check Now",
+        "update_prompt_close_title": "Launch Installer",
+        "update_prompt_close_msg": "The installer is about to launch. Would you like to close Ksav Kooker now so the upgrade can proceed smoothly?",
         
         # Top toolbar
         "btn_attach": "📁 Attach Pages",
@@ -244,6 +278,40 @@ STRINGS = {
         "menu_help": "עזרה",
         "menu_help_guide": "מדריך למשתמש וקיצורים (F1)",
         "menu_help_about": "אודות כתב קוקער...",
+        "menu_help_check_updates": "בדוק עדכונים... (Ctrl+U)",
+
+        # Update Dialog
+        "update_dialog_title": "בדיקת עדכונים",
+        "update_tab_status": "סטטוס עדכון",
+        "update_tab_settings": "הגדרות ומקור עדכון",
+        "update_curr_version": "גרסה מותקנת: v{version}",
+        "update_checking_msg": "בודק עדכונים מתוך {source}...",
+        "update_up_to_date_hdr": "התוכנה מעודכנת לחלוטין!",
+        "update_up_to_date_sub": "כתב קוקער גרסה {version} היא הגרסה העדכנית ביותר. אין צורך בעדכון.",
+        "update_available_hdr": "⚡ גרסה חדשה זמינה: v{version}",
+        "update_release_date": "תאריך שחרור: {date}",
+        "update_whats_new": "מה חדש בגרסה זו:",
+        "update_btn_check_again": "בדוק שוב",
+        "update_btn_run_installer": "🚀 הפעל התקנת עדכון כעת",
+        "update_btn_open_folder": "📁 פתח תיקיית עדכון",
+        "update_btn_open_web": "🌐 פתח דף שחרור ב-GitHub",
+        "update_btn_close": "סגור",
+        "update_err_hdr": "לא ניתן לבדוק עדכונים",
+        "update_err_folder_not_found": "תיקיית העדכון לא נמצאה: {folder}",
+        "update_err_no_version_json": "קובץ version.json לא נמצא בתיקייה: {folder}",
+        "update_err_invalid_data": "התקבלו נתוני עדכון לא תקינים.",
+        "update_err_network": "שגיאת חיבור רשת: {err}",
+        "update_source_group": "בחר היכן לחפש עדכונים:",
+        "update_source_web": "ענן GitHub הרשמי (אונליין)",
+        "update_source_web_desc": "בודק ב-GitHub עדכונים רשמיים חדשים (דורש חיבור אינטרנט).",
+        "update_source_local": "שיתוף רשת מקומי / שרת / USB (אופליין ודומיין)",
+        "update_source_local_desc": "בודק תיקייה מקומית או שיתוף שרת UNC (כגון \\\\newltcserver\\share או M:\\...) המכיל version.json ואת קובץ ההתקנה.",
+        "update_folder_path_lbl": "נתיב תיקיית רשת או שיתוף שרת:",
+        "update_folder_browse_btn": "עיון...",
+        "update_auto_check": "בדוק עדכונים אוטומטית בהפעלת התוכנה",
+        "update_save_settings_btn": "שמור הגדרות ובדוק כעת",
+        "update_prompt_close_title": "הפעלת התקנה",
+        "update_prompt_close_msg": "אשף ההתקנה עומד לפעול. האם לסגור את כתב קוקער כעת כדי שהעדכון יוכל להתבצע באופן תקין?",
 
         # Top toolbar
         "btn_attach": "📁 צרף תמונות",
@@ -449,3 +517,8 @@ class I18nManager:
 def t(key: str, **kwargs) -> str:
     """Convenience shortcut to translate a key."""
     return I18nManager.instance().t(key, **kwargs)
+
+
+def get_current_language() -> str:
+    """Get currently active language code ('en' or 'he')."""
+    return I18nManager.instance().current_lang
