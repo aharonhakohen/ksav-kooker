@@ -5,7 +5,7 @@ a = Analysis(
     ['C:/Users/afink/TorahNotesOCR/installer/setup_gui.py'],
     pathex=[],
     binaries=[],
-    datas=[('C:/Users/afink/TorahNotesOCR/assets', 'assets')],
+    datas=[('C:/Users/afink/TorahNotesOCR/assets', 'assets'), ('C:/Users/afink/TorahNotesOCR/dist/payload.zip', '.')],
     hiddenimports=[],
     hookspath=[],
     hooksconfig={},
