@@ -125,7 +125,7 @@ class ModernSetupWizard(QWizard):
         super().__init__()
         self.source_app_dir = source_app_dir
         self.installed_exe_path = ""
-        self.setWindowTitle("Ksav Kooker Setup — התקנת כתב קוקער (v1.0.0)")
+        self.setWindowTitle("Ksav Kooker Setup — התקנת כתב קוקער (v1.0.1)")
         self.resize(720, 520)
         self.setWizardStyle(QWizard.WizardStyle.ModernStyle)
 
@@ -217,7 +217,7 @@ class ModernSetupWizard(QWizard):
         lbl_hdr.setStyleSheet("font-size: 18px; font-weight: bold; color: #89b4fa;")
         right_box.addWidget(lbl_hdr)
 
-        lbl_ver = QLabel("גרסה 1.0.0 (Offline Edition)")
+        lbl_ver = QLabel("גרסה 1.0.1 (Offline Edition)")
         lbl_ver.setStyleSheet("font-size: 12px; font-weight: bold; color: #a6e3a1;")
         right_box.addWidget(lbl_ver)
 
