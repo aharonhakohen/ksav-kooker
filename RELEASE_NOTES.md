@@ -1,5 +1,28 @@
 # Release Notes — Ksav Kooker (כתב קוקער)
 
+## [v1.0.1] — 2026-11-04
+
+### Explanatory Title:
+**Brand Visual Upgrade: Integrating Option 2 (Dual-Page Transformation Stream) Across Application, Icons, and Setup Wizard**
+
+### Summary in Plain English:
+In response to user feedback, version `v1.0.1` transitions the visual identity of **Ksav Kooker** to the **"Dual-Page Digital Transformation Stream"** 3D design (Option 2). The new emblem represents the core mission of the software: taking personal handwritten yeshiva notes and watching them dynamically transform into clean, structured, printed pages.
+
+### What Changed & What Is Included:
+1. **Application Icon & Windows Shortcut Icon**:
+   - Replaced `assets/ksav_kooker.ico` with high-resolution multi-size Windows icon slices (256x256 down to 16x16) generated from the Option 2 design.
+   - All desktop and start menu shortcuts now display the new dual-page transformation icon.
+2. **Startup Splash Screen**:
+   - Integrated the new 3D emblem into the frameless splash screen, smoothly scaled with drop-shadow effects during neural engine warmup.
+3. **Windows Setup Wizard GUI**:
+   - Updated the installer welcome banner and completion screen in `installer/setup_gui.py` to showcase the new branding.
+4. **About Dialog & Documentation**:
+   - Updated the About dialog in `ui/about_dialog.py` and project README to showcase the new artwork.
+5. **Standalone Installer & Packages Rebuilt**:
+   - Re-compiled `KsavKooker_Setup.exe` (single-file offline setup wizard) and portable package `KsavKooker-v1.0.1-Windows.zip`.
+
+---
+
 ## [v1.0.0] — 2026-11-04 (Initial Release)
 
 ### Explanatory Title:
@@ -31,11 +54,3 @@ This is the inaugural release of **Ksav Kooker** (`v1.0.0`), a specialized, 100%
    - Integrated into startup splash screen, taskbar icon, about dialog, and the Windows installer wizard.
 8. **Self-Contained Windows Setup Wizard & Portable Packages**:
    - Packaged as an offline setup wizard (`KsavKooker_Setup.exe`) and portable zip archive (`KsavKooker-v1.0.0-Windows.zip`) containing Python runtime, PyTorch CPU, PyQt6, and neural weights.
-
-### How to Install and Use It:
-1. Double-click **`KsavKooker_Setup.exe`** to install into your user profile (no administrator privileges or internet required), or simply unzip **`KsavKooker-v1.0.0-Windows.zip`**.
-2. Launch **Ksav Kooker** from your Desktop or Start Menu.
-3. Click **"📁 צרף תמונות"** to attach your note pages.
-4. Click **"⚡ סרוק עמוד נוכחי"** to transcribe the page.
-5. Review the text in the right pane, fix any spelling, and click **"💾 שמור ולמד תיקונים"**.
-6. When done, click **"📝 ייצוא לוורד (.docx)"** to create your Word document.
