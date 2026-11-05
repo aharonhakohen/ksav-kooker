@@ -3,20 +3,18 @@
   "appNameHebrew": "כתב קוקער",
   "tagline": "Offline Torah Notes & Handwriting OCR Studio",
   "taglineYiddish": "דער קלוגער כתב-קוקער פאר שיעורים און חידושי תורה",
-  "version": "1.1.2",
+  "version": "1.2.0",
   "releaseDate": "2026-11-05",
-  "releaseTitle": "v1.1.2 — High-Contrast Installer & Streamlined Studio UX Overhaul",
-  "description": "Ksav Kooker (כתב קוקער) v1.1.2 completely resolves washed-out text in the Windows Setup Wizard with high-contrast typography, restores the 3D logo emblem in the installer, adds a native Windows Menu Bar, and overhauls the main studio toolbar into a streamlined, uncluttered layout with stacked Scan, Export, and Profile dropdowns.",
+  "releaseTitle": "v1.2.0 — In-App Update Checker (GitHub Cloud & Local Network Share) with Clean Upgrade Process",
+  "description": "Ksav Kooker (כתב קוקער) v1.2.0 adds a full-featured 'Check for Updates' tool in the Help menu (Ctrl+U) with dual update channels (GitHub Cloud and Local Network Share/Server folder), alongside a clean upgrade installer engine that prevents file-locking conflicts and purges obsolete binaries while fully preserving all user handwriting data.",
   "features": [
-    "High-Contrast Windows Installer: Restored high-contrast slate typography on clean white pages, eliminating washed-out text, with clear navigation and verified 3D emblem rendering.",
-    "Native Windows Menu Bar: Added full standard File, Scan & OCR, Learning & Profiles, View, Language, and Help menus with keyboard shortcuts.",
-    "Streamlined Stacked Toolbar: Consolidated sprawling buttons into clean, intuitive dropdowns: '⚡ Scan ▾' (Current/All), '📄 Export ▾' (Word/Text), and a unified Profile button.",
-    "Fixed Font & Icon Clipping: Completely fixed button padding and dimensions across sidebar and viewer controls (+ Add, Delete, ↻, ↺, ✨ Ink Enhancer, ⛶ Fit, +, −) to eliminate truncated labels and square boxes.",
-    "Categorized Torah Abbreviations Menu: Replaced sprawled abbreviation buttons with quick favorites plus a categorized dropdown for Seforim/Rishonim and Talmudic terminology.",
-    "English Default Interface: Clean English interface by default with instant one-click toggle to Hebrew at runtime.",
-    "Multi-User Handwriting Profiles: Dedicated isolated learning memory banks for different scribes and students.",
-    "Multi-Profile Stacking: Combine rules from multiple people simultaneously during OCR scans.",
-    "One-Click Backup & Restore: Instant timestamped backups, safe restores, and colleague rule merging.",
-    "100% Offline & Roaming Profile Compatible: Runs locally on CPU with zero internet connection required."
+    "In-App Update Checker (Help > Check for Updates... or Ctrl+U): Easily check if a newer version is available without leaving the application.",
+    "Dual Update Channels (Configurable): Choose between Official GitHub Cloud (online) or a Local Network Share / UNC Domain Folder / USB Drive (e.g. \\\\newltcserver\\Installs\\KsavKooker or M:\\...) for offline institutional environments.",
+    "One-Click Offline Upgrades: When pointed to a network folder containing KsavKooker_Setup.exe, updates can be launched directly with a single click.",
+    "Automatic Running Process Detection: The setup wizard detects if Ksav Kooker is running and gracefully closes it before file extraction, preventing Windows permission errors.",
+    "Clean Binary Purge on Upgrade: Upgrading cleans out old application binaries and obsolete cached modules in the installation directory to prevent file bloat and conflicts.",
+    "100% User Data Isolation: All personal handwriting profiles, learned mistake rules, backups, and settings in %APPDATA% remain completely untouched during upgrades.",
+    "High-Contrast Windows Setup Wizard: Crisp, readable slate typography and verified 3D logo emblem rendering.",
+    "Native Windows Menu Bar & Stacked Workflow: Standard File, Scan & OCR, Learning, View, Language, and Help menus with streamlined action dropdowns."
   ]
 }

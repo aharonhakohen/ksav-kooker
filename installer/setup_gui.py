@@ -79,7 +79,34 @@ class InstallWorker(QThread):
         try:
             import zipfile
             os.makedirs(self.target_dir, exist_ok=True)
-            self.progress.emit(5, "Preparing destination folder...")
+            self.progress.emit(3, "Checking running processes...")
+
+            # 1. Gracefully close any running KsavKooker.exe to prevent file-locking conflicts
+            try:
+                chk = subprocess.run(["tasklist", "/fi", "imagename eq KsavKooker.exe"], capture_output=True, text=True)
+                if "KsavKooker.exe" in chk.stdout:
+                    self.progress.emit(4, "Closing active Ksav Kooker instance for upgrade...")
+                    subprocess.run(["taskkill", "/f", "/im", "KsavKooker.exe"], capture_output=True)
+                    time.sleep(1)
+            except Exception:
+                pass
+
+            # 2. When upgrading an existing installation, cleanly remove old application binaries
+            # Note: User data (%APPDATA%\KsavKooker) is completely isolated and never touched!
+            if os.path.exists(self.target_dir):
+                self.progress.emit(6, "Refreshing application directory...")
+                for item in ["_internal", "model_assets", "assets"]:
+                    p = os.path.join(self.target_dir, item)
+                    if os.path.exists(p):
+                        shutil.rmtree(p, ignore_errors=True)
+                old_exe = os.path.join(self.target_dir, "KsavKooker.exe")
+                if os.path.exists(old_exe):
+                    try:
+                        os.remove(old_exe)
+                    except Exception:
+                        pass
+
+            self.progress.emit(8, "Preparing destination folder...")
 
             # Check if an embedded payload.zip is present (single-file installer mode)
             base_dir = getattr(sys, '_MEIPASS', os.path.dirname(os.path.abspath(__file__)))
@@ -462,6 +489,22 @@ class ModernSetupWizard(QWizard):
         lbl_space = QLabel("Required free space: ~450 MB  |  Standalone installation with zero external dependencies.")
         lbl_space.setStyleSheet("color: #64748b; font-size: 12px;")
         layout.addWidget(lbl_space)
+
+        existing_exe = os.path.join(default_dir, "KsavKooker.exe")
+        if os.path.exists(existing_exe):
+            lbl_upgrade = QLabel(
+                "<b>Upgrade Mode Detected:</b> Setup will refresh all application binaries while fully preserving your personal handwriting profiles, mistake memory bank, and custom settings in %APPDATA%."
+            )
+            lbl_upgrade.setWordWrap(True)
+            lbl_upgrade.setStyleSheet("""
+                background-color: #ecfdf5;
+                color: #065f46;
+                border: 1px solid #a7f3d0;
+                border-radius: 6px;
+                padding: 8px 12px;
+                font-size: 12px;
+            """)
+            layout.addWidget(lbl_upgrade)
 
         layout.addStretch()
         return page

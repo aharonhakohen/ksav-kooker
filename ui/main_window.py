@@ -270,6 +270,13 @@ class MainWindow(QMainWindow):
 
         # Help Menu
         self.m_help = mb.addMenu(t("menu_help"))
+        self.act_help_updates = QAction(t("menu_help_check_updates"), self)
+        self.act_help_updates.setShortcut(QKeySequence("Ctrl+U"))
+        self.act_help_updates.triggered.connect(self.open_update_dialog)
+        self.m_help.addAction(self.act_help_updates)
+
+        self.m_help.addSeparator()
+
         self.act_help_about = QAction(t("menu_help_about"), self)
         self.act_help_about.triggered.connect(self.open_about_dialog)
         self.m_help.addAction(self.act_help_about)
@@ -577,6 +584,7 @@ class MainWindow(QMainWindow):
         self.act_lang_he.setText(t("menu_lang_he"))
 
         self.m_help.setTitle(t("menu_help"))
+        self.act_help_updates.setText(t("menu_help_check_updates"))
         self.act_help_about.setText(t("menu_help_about"))
 
         # Action Toolbar
@@ -994,6 +1002,11 @@ class MainWindow(QMainWindow):
         dlg.exec()
         self._refresh_profiles_ui()
         self.update_learned_count_badge()
+
+    def open_update_dialog(self):
+        from ui.update_dialog import UpdateDialog
+        dlg = UpdateDialog(self)
+        dlg.exec()
 
     def open_about_dialog(self):
         dlg = AboutDialog(self)

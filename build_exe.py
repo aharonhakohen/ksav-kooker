@@ -19,9 +19,9 @@ def get_version() -> str:
     vpath = os.path.join(BASE_DIR, "version.json")
     try:
         with open(vpath, "r", encoding="utf-8") as f:
-            return json.load(f).get("version", "1.1.2")
+            return json.load(f).get("version", "1.2.0")
     except Exception:
-        return "1.1.2"
+        return "1.2.0"
 
 def create_payload_zip(src_dir: str, out_zip: str):
     print(f"\nCompressing offline application payload to {out_zip}...")
@@ -56,6 +56,7 @@ def build(force_rebuild: bool = False):
         os.path.join(BASE_DIR, "ui", "main_window.py"),
         os.path.join(BASE_DIR, "ui", "dictionary_dialog.py"),
         os.path.join(BASE_DIR, "ui", "text_editor.py"),
+        os.path.join(BASE_DIR, "ui", "update_dialog.py"),
         os.path.join(BASE_DIR, "ui", "theme.py"),
         os.path.join(BASE_DIR, "installer", "setup_gui.py"),
         os.path.join(BASE_DIR, "ui", "i18n.py"),
@@ -155,6 +156,10 @@ def build(force_rebuild: bool = False):
             portable_zip = os.path.join(target_drive, f"KsavKooker-v{version}-Windows.zip")
             shutil.copy2(payload_zip, portable_zip)
             print(f" -> Deployed portable zip to {portable_zip}")
+
+            # 3. version.json for offline update checks
+            shutil.copy2(os.path.join(BASE_DIR, "version.json"), os.path.join(target_drive, "version.json"))
+            print(" -> Deployed version.json for offline update checks")
 
             # 3. Unpacked directory
             drive_app_dir = os.path.join(target_drive, "Ksav Kooker")
