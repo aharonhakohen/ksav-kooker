@@ -34,27 +34,47 @@ class InstallWorker(QThread):
 
     def run(self):
         try:
+            import zipfile
             os.makedirs(self.target_dir, exist_ok=True)
-            self.progress.emit(10, "מכין תיקיית יעד...")
+            self.progress.emit(5, "מכין תיקיית יעד...")
 
-            # Collect files to copy
-            all_files = []
-            for root, dirs, files in os.walk(self.source_dir):
-                for f in files:
-                    src_f = os.path.join(root, f)
-                    rel_f = os.path.relpath(src_f, self.source_dir)
-                    all_files.append((src_f, rel_f))
+            # Check if an embedded payload.zip is present (single-file installer mode)
+            base_dir = getattr(sys, '_MEIPASS', os.path.dirname(os.path.abspath(__file__)))
+            payload_candidates = [
+                os.path.join(base_dir, "payload.zip"),
+                os.path.join(os.path.dirname(sys.executable), "payload.zip") if getattr(sys, 'frozen', False) else "",
+                os.path.join(APP_ROOT, "dist", "payload.zip")
+            ]
+            embedded_zip = next((p for p in payload_candidates if p and os.path.exists(p)), None)
 
-            total_files = len(all_files)
-            for idx, (src_f, rel_f) in enumerate(all_files):
-                dst_f = os.path.join(self.target_dir, rel_f)
-                os.makedirs(os.path.dirname(dst_f), exist_ok=True)
-                shutil.copy2(src_f, dst_f)
-                
-                pct = 15 + int((idx / max(1, total_files)) * 70)
-                self.progress.emit(pct, f"מעתיק קובץ: {os.path.basename(rel_f)}")
+            if embedded_zip:
+                # Extract embedded offline zip payload
+                with zipfile.ZipFile(embedded_zip, 'r') as zf:
+                    infolist = zf.infolist()
+                    total = len(infolist)
+                    for idx, info in enumerate(infolist):
+                        zf.extract(info, self.target_dir)
+                        pct = 10 + int((idx / max(1, total)) * 75)
+                        self.progress.emit(pct, f"מחלץ רכיב: {os.path.basename(info.filename)}")
+            else:
+                # Fallback: copy files from directory
+                all_files = []
+                for root, dirs, files in os.walk(self.source_dir):
+                    for f in files:
+                        src_f = os.path.join(root, f)
+                        rel_f = os.path.relpath(src_f, self.source_dir)
+                        all_files.append((src_f, rel_f))
 
-            self.progress.emit(90, "יוצר קיצורי דרך...")
+                total_files = len(all_files)
+                for idx, (src_f, rel_f) in enumerate(all_files):
+                    dst_f = os.path.join(self.target_dir, rel_f)
+                    os.makedirs(os.path.dirname(dst_f), exist_ok=True)
+                    shutil.copy2(src_f, dst_f)
+                    
+                    pct = 10 + int((idx / max(1, total_files)) * 75)
+                    self.progress.emit(pct, f"מעתיק קובץ: {os.path.basename(rel_f)}")
+
+            self.progress.emit(90, "יוצר קיצורי דרך במחשב...")
             exe_path = os.path.join(self.target_dir, "KsavKooker.exe")
             ico_path = os.path.join(self.target_dir, "assets", "ksav_kooker.ico")
             if not os.path.exists(ico_path):

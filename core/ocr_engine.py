@@ -42,7 +42,10 @@ class OCREngine:
             return
 
         if not os.path.exists(self.checkpoint_path):
-            raise FileNotFoundError(f"Mishkefet model checkpoint not found at: {self.checkpoint_path}")
+            raise FileNotFoundError(
+                f"Mishkefet model checkpoint not found at: {self.checkpoint_path}.\n"
+                f"Please run 'python scripts/download_model.py' to download the weights from GitHub Releases."
+            )
 
         # Import locally from core.hebocr
         from core.hebocr.recognize import Recognizer
