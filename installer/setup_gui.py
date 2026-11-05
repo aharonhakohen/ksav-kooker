@@ -1,11 +1,13 @@
 # -*- coding: utf-8 -*-
 """
 Ksav Kooker - Modern Windows Installation Wizard GUI
-Features the 3D logo banner, folder selection, shortcut creation, and automatic launch.
+Features the 3D logo banner, high-contrast typography, folder selection,
+shortcut creation, and automatic launch.
 """
 
 import os
 import sys
+import json
 import shutil
 import subprocess
 import time
@@ -16,34 +18,76 @@ from PyQt6.QtWidgets import (
     QFileDialog, QMessageBox, QFrame
 )
 from PyQt6.QtCore import Qt, QThread, pyqtSignal
-from PyQt6.QtGui import QPixmap, QIcon, QFont, QColor
+from PyQt6.QtGui import QPixmap, QIcon, QFont, QColor, QPalette
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 APP_ROOT = os.path.dirname(BASE_DIR)
+
+def get_resource_path(rel_path: str) -> str:
+    """
+    Resolve absolute path to resource files.
+    Works for:
+      1. PyInstaller single-file mode (sys._MEIPASS)
+      2. PyInstaller onedir mode (sys.executable dir)
+      3. Development source tree (relative to TorahNotesOCR root)
+      4. installer folder fallback
+    """
+    if hasattr(sys, '_MEIPASS'):
+        candidate = os.path.join(sys._MEIPASS, rel_path)
+        if os.path.exists(candidate):
+            return candidate
+        candidate_bare = os.path.join(sys._MEIPASS, os.path.basename(rel_path))
+        if os.path.exists(candidate_bare):
+            return candidate_bare
+
+    if getattr(sys, 'frozen', False):
+        candidate = os.path.join(os.path.dirname(sys.executable), rel_path)
+        if os.path.exists(candidate):
+            return candidate
+
+    candidate = os.path.join(APP_ROOT, rel_path)
+    if os.path.exists(candidate):
+        return candidate
+
+    candidate = os.path.join(BASE_DIR, rel_path)
+    if os.path.exists(candidate):
+        return candidate
+
+    return rel_path
+
+def get_app_version() -> str:
+    vpath = get_resource_path("version.json")
+    try:
+        with open(vpath, "r", encoding="utf-8") as f:
+            return json.load(f).get("version", "1.1.2")
+    except Exception:
+        return "1.1.2"
 
 class InstallWorker(QThread):
     progress = pyqtSignal(int, str)
     finished = pyqtSignal(bool, str)
 
-    def __init__(self, source_dir: str, target_dir: str, create_desktop: bool, create_startmenu: bool):
+    def __init__(self, source_dir: str, target_dir: str, create_desktop: bool, create_startmenu: bool, version: str):
         super().__init__()
         self.source_dir = source_dir
         self.target_dir = target_dir
         self.create_desktop = create_desktop
         self.create_startmenu = create_startmenu
+        self.version = version
 
     def run(self):
         try:
             import zipfile
             os.makedirs(self.target_dir, exist_ok=True)
-            self.progress.emit(5, "מכין תיקיית יעד...")
+            self.progress.emit(5, "Preparing destination folder...")
 
             # Check if an embedded payload.zip is present (single-file installer mode)
             base_dir = getattr(sys, '_MEIPASS', os.path.dirname(os.path.abspath(__file__)))
             payload_candidates = [
                 os.path.join(base_dir, "payload.zip"),
                 os.path.join(os.path.dirname(sys.executable), "payload.zip") if getattr(sys, 'frozen', False) else "",
-                os.path.join(APP_ROOT, "dist", "payload.zip")
+                os.path.join(APP_ROOT, "dist", "payload.zip"),
+                get_resource_path("payload.zip")
             ]
             embedded_zip = next((p for p in payload_candidates if p and os.path.exists(p)), None)
 
@@ -55,7 +99,7 @@ class InstallWorker(QThread):
                     for idx, info in enumerate(infolist):
                         zf.extract(info, self.target_dir)
                         pct = 10 + int((idx / max(1, total)) * 75)
-                        self.progress.emit(pct, f"מחלץ רכיב: {os.path.basename(info.filename)}")
+                        self.progress.emit(pct, f"Extracting: {os.path.basename(info.filename)}")
             else:
                 # Fallback: copy files from directory
                 all_files = []
@@ -72,9 +116,9 @@ class InstallWorker(QThread):
                     shutil.copy2(src_f, dst_f)
                     
                     pct = 10 + int((idx / max(1, total_files)) * 75)
-                    self.progress.emit(pct, f"מעתיק קובץ: {os.path.basename(rel_f)}")
+                    self.progress.emit(pct, f"Copying: {os.path.basename(rel_f)}")
 
-            self.progress.emit(90, "יוצר קיצורי דרך במחשב...")
+            self.progress.emit(90, "Creating shortcuts...")
             exe_path = os.path.join(self.target_dir, "KsavKooker.exe")
             ico_path = os.path.join(self.target_dir, "assets", "ksav_kooker.ico")
             if not os.path.exists(ico_path):
@@ -106,7 +150,7 @@ class InstallWorker(QThread):
             # Register in Windows Add/Remove Programs (HKCU Uninstall)
             self._register_uninstall(self.target_dir, exe_path, ico_path)
 
-            self.progress.emit(100, "ההתקנה הושלמה בהצלחה!")
+            self.progress.emit(100, "Installation completed successfully!")
             self.finished.emit(True, exe_path)
         except Exception as e:
             self.finished.emit(False, str(e))
@@ -174,7 +218,7 @@ timeout /t 3
             key_path = r"Software\Microsoft\Windows\CurrentVersion\Uninstall\KsavKooker"
             with winreg.CreateKey(winreg.HKEY_CURRENT_USER, key_path) as key:
                 winreg.SetValueEx(key, "DisplayName", 0, winreg.REG_SZ, "Ksav Kooker (כתב קוקער)")
-                winreg.SetValueEx(key, "DisplayVersion", 0, winreg.REG_SZ, "1.1.1")
+                winreg.SetValueEx(key, "DisplayVersion", 0, winreg.REG_SZ, self.version)
                 winreg.SetValueEx(key, "Publisher", 0, winreg.REG_SZ, "Torah u'Mesorah Lakewood Teachers Center")
                 winreg.SetValueEx(key, "DisplayIcon", 0, winreg.REG_SZ, ico_path)
                 winreg.SetValueEx(key, "InstallLocation", 0, winreg.REG_SZ, target_dir)
@@ -192,7 +236,8 @@ class ModernSetupWizard(QWizard):
         super().__init__()
         self.source_app_dir = source_app_dir
         self.installed_exe_path = ""
-        self.setWindowTitle("Ksav Kooker Setup — Installation Wizard (v1.1.1)")
+        self.version = get_app_version()
+        self.setWindowTitle(f"Ksav Kooker Setup — Installation Wizard (v{self.version})")
         self.resize(720, 520)
         self.setWizardStyle(QWizard.WizardStyle.ModernStyle)
         self.setLayoutDirection(Qt.LayoutDirection.LeftToRight)
@@ -201,54 +246,80 @@ class ModernSetupWizard(QWizard):
         self.setButtonText(QWizard.WizardButton.FinishButton, "Finish")
         self.setButtonText(QWizard.WizardButton.CancelButton, "Cancel")
 
-        # Set Icon
-        icon_path = os.path.join(APP_ROOT, "assets", "ksav_kooker.ico")
+        # Set Window Icon
+        icon_path = get_resource_path(os.path.join("assets", "ksav_kooker.ico"))
         if os.path.exists(icon_path):
             self.setWindowIcon(QIcon(icon_path))
 
-        # Modern Styling
+        # Explicit Palette for native Windows elements
+        pal = self.palette()
+        pal.setColor(QPalette.ColorRole.Window, QColor("#ffffff"))
+        pal.setColor(QPalette.ColorRole.WindowText, QColor("#0f172a"))
+        pal.setColor(QPalette.ColorRole.Base, QColor("#ffffff"))
+        pal.setColor(QPalette.ColorRole.Text, QColor("#0f172a"))
+        pal.setColor(QPalette.ColorRole.Button, QColor("#f8fafc"))
+        pal.setColor(QPalette.ColorRole.ButtonText, QColor("#0f172a"))
+        self.setPalette(pal)
+
+        # High-Contrast Modern Windows Wizard Styling
         self.setStyleSheet("""
             QWizard {
-                background-color: #181825;
-                color: #cdd6f4;
-                font-family: 'Segoe UI', 'David', sans-serif;
+                background-color: #f8fafc;
+                color: #0f172a;
+                font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, 'David', sans-serif;
+            }
+            QWizardPage {
+                background-color: #ffffff;
+                color: #0f172a;
             }
             QLabel {
-                color: #cdd6f4;
+                color: #1e293b;
                 font-size: 13px;
             }
             QLineEdit {
-                background-color: #1e1e2e;
-                border: 1px solid #45475a;
+                background-color: #ffffff;
+                border: 1px solid #cbd5e1;
                 border-radius: 6px;
-                padding: 6px 10px;
-                color: #ffffff;
+                padding: 7px 12px;
+                color: #0f172a;
+                font-size: 13px;
+                selection-background-color: #2563eb;
+                selection-color: #ffffff;
+            }
+            QLineEdit:focus {
+                border: 1.5px solid #2563eb;
             }
             QPushButton {
-                background-color: #313244;
-                color: #cdd6f4;
-                border: 1px solid #45475a;
+                background-color: #ffffff;
+                color: #1e293b;
+                border: 1px solid #cbd5e1;
                 border-radius: 6px;
                 padding: 6px 16px;
-                font-weight: 600;
+                font-weight: 500;
+                font-size: 13px;
+                min-width: 65px;
             }
             QPushButton:hover {
-                background-color: #2563eb;
-                color: #ffffff;
-                border-color: #3b82f6;
+                background-color: #f1f5f9;
+                border-color: #94a3b8;
+            }
+            QPushButton:pressed {
+                background-color: #e2e8f0;
             }
             QCheckBox {
-                color: #cdd6f4;
+                color: #1e293b;
                 font-size: 13px;
-                spacing: 8px;
+                spacing: 10px;
             }
             QProgressBar {
-                border: 1px solid #45475a;
+                border: 1px solid #cbd5e1;
                 border-radius: 6px;
-                background-color: #1e1e2e;
-                color: #ffffff;
+                background-color: #f1f5f9;
+                color: #0f172a;
                 text-align: center;
-                height: 18px;
+                font-weight: bold;
+                font-size: 12px;
+                height: 22px;
             }
             QProgressBar::chunk {
                 background-color: #2563eb;
@@ -262,20 +333,71 @@ class ModernSetupWizard(QWizard):
         self.setPage(2, self._create_options_page())
         self.setPage(3, self._create_installing_page())
         self.setPage(4, self._create_finished_page())
+        self._style_buttons()
+
+    def _style_buttons(self):
+        b_next = self.button(QWizard.WizardButton.NextButton)
+        if b_next:
+            b_next.setStyleSheet("""
+                QPushButton {
+                    background-color: #2563eb;
+                    color: #ffffff;
+                    font-weight: 600;
+                    border: 1px solid #1d4ed8;
+                    border-radius: 6px;
+                    padding: 6px 18px;
+                    min-width: 65px;
+                }
+                QPushButton:hover {
+                    background-color: #1d4ed8;
+                }
+                QPushButton:pressed {
+                    background-color: #1e40af;
+                }
+                QPushButton:disabled {
+                    background-color: #94a3b8;
+                    border-color: #94a3b8;
+                    color: #e2e8f0;
+                }
+            """)
+        b_finish = self.button(QWizard.WizardButton.FinishButton)
+        if b_finish:
+            b_finish.setStyleSheet("""
+                QPushButton {
+                    background-color: #16a34a;
+                    color: #ffffff;
+                    font-weight: 600;
+                    border: 1px solid #15803d;
+                    border-radius: 6px;
+                    padding: 6px 18px;
+                    min-width: 65px;
+                }
+                QPushButton:hover {
+                    background-color: #15803d;
+                }
+                QPushButton:pressed {
+                    background-color: #166534;
+                }
+                QPushButton:disabled {
+                    background-color: #94a3b8;
+                    border-color: #94a3b8;
+                    color: #e2e8f0;
+                }
+            """)
 
     def _create_welcome_page(self) -> QWizardPage:
         page = QWizardPage()
         page.setTitle("")
         page.setSubTitle("")
         layout = QHBoxLayout(page)
-        layout.setContentsMargins(10, 10, 10, 10)
-        layout.setSpacing(16)
+        layout.setContentsMargins(20, 20, 20, 20)
+        layout.setSpacing(20)
 
         # Left 3D Banner
-        logo_path = os.path.join(APP_ROOT, "assets", "ksav_kooker.png")
+        logo_path = get_resource_path(os.path.join("assets", "ksav_kooker.png"))
         if os.path.exists(logo_path):
             lbl_banner = QLabel()
-            pix = QPixmap(logo_path).scaled(240, 240, Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation)
+            pix = QPixmap(logo_path).scaled(220, 220, Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation)
             lbl_banner.setPixmap(pix)
             lbl_banner.setAlignment(Qt.AlignmentFlag.AlignCenter)
             lbl_banner.setStyleSheet("background: transparent; border: none;")
@@ -283,14 +405,14 @@ class ModernSetupWizard(QWizard):
 
         # Right Text
         right_box = QVBoxLayout()
-        right_box.setSpacing(12)
+        right_box.setSpacing(10)
 
         lbl_hdr = QLabel("Welcome to Ksav Kooker Setup")
-        lbl_hdr.setStyleSheet("font-size: 20px; font-weight: bold; color: #89b4fa;")
+        lbl_hdr.setStyleSheet("font-size: 20px; font-weight: bold; color: #0f172a;")
         right_box.addWidget(lbl_hdr)
 
-        lbl_ver = QLabel("Version 1.1.1 (100% Offline Edition)")
-        lbl_ver.setStyleSheet("font-size: 12px; font-weight: bold; color: #a6e3a1;")
+        lbl_ver = QLabel(f"Version {self.version} (100% Offline Edition)")
+        lbl_ver.setStyleSheet("font-size: 12px; font-weight: 600; color: #047857;")
         right_box.addWidget(lbl_ver)
 
         lbl_desc = QLabel(
@@ -304,7 +426,7 @@ class ModernSetupWizard(QWizard):
             "Click <b>Next</b> to continue, or Cancel to exit Setup."
         )
         lbl_desc.setWordWrap(True)
-        lbl_desc.setStyleSheet("line-height: 1.4; color: #cdd6f4;")
+        lbl_desc.setStyleSheet("line-height: 1.5; color: #334155; font-size: 13px;")
         right_box.addWidget(lbl_desc)
 
         right_box.addStretch()
@@ -317,17 +439,18 @@ class ModernSetupWizard(QWizard):
         page.setSubTitle("Select the destination folder where Setup will install Ksav Kooker:")
 
         layout = QVBoxLayout(page)
-        layout.setSpacing(12)
-        layout.setContentsMargins(20, 20, 20, 20)
+        layout.setSpacing(14)
+        layout.setContentsMargins(24, 20, 24, 20)
 
         # Default path in LocalAppData
         default_dir = os.path.join(os.environ.get("LOCALAPPDATA", os.path.expanduser("~")), "Programs", "Ksav Kooker")
 
         lbl_prompt = QLabel("Destination Folder:")
-        lbl_prompt.setStyleSheet("font-weight: bold;")
+        lbl_prompt.setStyleSheet("font-weight: 600; color: #0f172a; font-size: 13px;")
         layout.addWidget(lbl_prompt)
 
         dir_box = QHBoxLayout()
+        dir_box.setSpacing(10)
         self.txt_dest = QLineEdit(default_dir)
         dir_box.addWidget(self.txt_dest)
 
@@ -336,15 +459,15 @@ class ModernSetupWizard(QWizard):
         dir_box.addWidget(btn_browse)
         layout.addLayout(dir_box)
 
-        lbl_space = QLabel("Required free space: ~450 MB | Standalone installation with zero external dependencies.")
-        lbl_space.setStyleSheet("color: #a6adc8; font-size: 11px;")
+        lbl_space = QLabel("Required free space: ~450 MB  |  Standalone installation with zero external dependencies.")
+        lbl_space.setStyleSheet("color: #64748b; font-size: 12px;")
         layout.addWidget(lbl_space)
 
         layout.addStretch()
         return page
 
     def _browse_destination(self):
-        chosen = QFileDialog.getExistingDirectory(self, "בחר תיקיית התקנה", self.txt_dest.text())
+        chosen = QFileDialog.getExistingDirectory(self, "Select Installation Folder", self.txt_dest.text())
         if chosen:
             self.txt_dest.setText(os.path.join(chosen, "Ksav Kooker"))
 
@@ -354,8 +477,8 @@ class ModernSetupWizard(QWizard):
         page.setSubTitle("Select which shortcuts you want Setup to create:")
 
         layout = QVBoxLayout(page)
-        layout.setSpacing(14)
-        layout.setContentsMargins(20, 20, 20, 20)
+        layout.setSpacing(16)
+        layout.setContentsMargins(24, 20, 24, 20)
 
         self.chk_desktop = QCheckBox("Create Desktop Shortcut")
         self.chk_desktop.setChecked(True)
@@ -378,11 +501,11 @@ class ModernSetupWizard(QWizard):
         self.page_installing.setSubTitle("Please wait while Setup installs Ksav Kooker on your computer:")
 
         layout = QVBoxLayout(self.page_installing)
-        layout.setSpacing(14)
-        layout.setContentsMargins(20, 30, 20, 20)
+        layout.setSpacing(16)
+        layout.setContentsMargins(24, 30, 24, 20)
 
         self.lbl_install_status = QLabel("Preparing installation...")
-        self.lbl_install_status.setStyleSheet("font-weight: bold; color: #89b4fa;")
+        self.lbl_install_status.setStyleSheet("font-weight: 600; color: #1e293b; font-size: 13px;")
         layout.addWidget(self.lbl_install_status)
 
         self.install_progress = QProgressBar()
@@ -399,11 +522,11 @@ class ModernSetupWizard(QWizard):
         page.setSubTitle("")
 
         layout = QHBoxLayout(page)
-        layout.setContentsMargins(10, 10, 10, 10)
-        layout.setSpacing(16)
+        layout.setContentsMargins(20, 20, 20, 20)
+        layout.setSpacing(20)
 
         # 3D Logo on finish
-        logo_path = os.path.join(APP_ROOT, "assets", "ksav_kooker.png")
+        logo_path = get_resource_path(os.path.join("assets", "ksav_kooker.png"))
         if os.path.exists(logo_path):
             lbl_banner = QLabel()
             pix = QPixmap(logo_path).scaled(220, 220, Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation)
@@ -416,7 +539,7 @@ class ModernSetupWizard(QWizard):
         right_box.setSpacing(12)
 
         lbl_hdr = QLabel("Installation Complete! ✓")
-        lbl_hdr.setStyleSheet("font-size: 20px; font-weight: bold; color: #a6e3a1;")
+        lbl_hdr.setStyleSheet("font-size: 20px; font-weight: bold; color: #047857;")
         right_box.addWidget(lbl_hdr)
 
         lbl_msg = QLabel(
@@ -426,7 +549,7 @@ class ModernSetupWizard(QWizard):
             "Click <b>Finish</b> to exit Setup."
         )
         lbl_msg.setWordWrap(True)
-        lbl_msg.setStyleSheet("color: #cdd6f4; font-size: 13px; line-height: 1.5;")
+        lbl_msg.setStyleSheet("color: #334155; font-size: 13px; line-height: 1.5;")
         right_box.addWidget(lbl_msg)
 
         right_box.addStretch()
@@ -435,10 +558,17 @@ class ModernSetupWizard(QWizard):
 
     def initializePage(self, page_id: int):
         super().initializePage(page_id)
+        self._style_buttons()
         if page_id == 3:  # Installing page
-            self.button(QWizard.WizardButton.BackButton).setEnabled(False)
-            self.button(QWizard.WizardButton.NextButton).setEnabled(False)
-            self.button(QWizard.WizardButton.CancelButton).setEnabled(False)
+            back_btn = self.button(QWizard.WizardButton.BackButton)
+            if back_btn:
+                back_btn.setEnabled(False)
+            next_btn = self.button(QWizard.WizardButton.NextButton)
+            if next_btn:
+                next_btn.setEnabled(False)
+            cancel_btn = self.button(QWizard.WizardButton.CancelButton)
+            if cancel_btn:
+                cancel_btn.setEnabled(False)
             self._start_installation()
 
     def _start_installation(self):
@@ -447,7 +577,8 @@ class ModernSetupWizard(QWizard):
             self.source_app_dir,
             target_dir,
             self.chk_desktop.isChecked(),
-            self.chk_startmenu.isChecked()
+            self.chk_startmenu.isChecked(),
+            self.version
         )
         self.worker.progress.connect(self._on_install_progress)
         self.worker.finished.connect(self._on_install_finished)
@@ -461,10 +592,14 @@ class ModernSetupWizard(QWizard):
         if success:
             self.installed_exe_path = res
             self.next()
-            self.button(QWizard.WizardButton.FinishButton).setEnabled(True)
+            finish_btn = self.button(QWizard.WizardButton.FinishButton)
+            if finish_btn:
+                finish_btn.setEnabled(True)
         else:
-            QMessageBox.critical(self, "שגיאה בהתקנה", f"אירעה שגיאה בעת ההתקנה:\n{res}")
-            self.button(QWizard.WizardButton.CancelButton).setEnabled(True)
+            QMessageBox.critical(self, "Installation Error", f"An error occurred during installation:\n{res}")
+            cancel_btn = self.button(QWizard.WizardButton.CancelButton)
+            if cancel_btn:
+                cancel_btn.setEnabled(True)
 
     def accept(self):
         # If launch checked, start app

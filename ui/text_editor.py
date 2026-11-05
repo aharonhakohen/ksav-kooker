@@ -63,13 +63,13 @@ class HebrewTextEditor(QWidget):
         self.lbl_quick.setStyleSheet("font-weight: bold; color: #89b4fa; font-size: 11px;")
         self.abbrev_bar.addWidget(self.lbl_quick)
 
-        for abbr, full in COMMON_ABBREVIATIONS[:8]:
+        for abbr, full in [('בס"ד', 'בס"ד'), ('רש"י', 'רש"י'), ('תוס\'', 'תוספות')]:
             btn = QPushButton(abbr)
             btn.setToolTip(full)
             btn.setFixedHeight(24)
             btn.setStyleSheet("""
                 QPushButton {
-                    padding: 2px 6px; 
+                    padding: 2px 8px; 
                     font-size: 11px; 
                     font-weight: bold;
                     border-radius: 4px;
@@ -78,15 +78,63 @@ class HebrewTextEditor(QWidget):
             btn.clicked.connect(lambda checked, text=abbr: self.insert_text(text))
             self.abbrev_bar.addWidget(btn)
 
-        # More abbreviations menu
-        self.btn_more_abbr = QPushButton(t("editor_more_abbr"))
+        # Categorized Torah Abbreviations Menu
+        self.btn_more_abbr = QToolButton()
+        self.btn_more_abbr.setText(t("abbr_menu_title"))
         self.btn_more_abbr.setFixedHeight(24)
-        more_menu = QMenu(self)
-        for abbr, full in COMMON_ABBREVIATIONS[8:]:
-            act = QAction(f"{abbr}  ({full})", self)
-            act.triggered.connect(lambda checked, text=abbr: self.insert_text(text))
-            more_menu.addAction(act)
-        self.btn_more_abbr.setMenu(more_menu)
+        self.btn_more_abbr.setStyleSheet("""
+            QToolButton {
+                padding: 2px 8px; 
+                font-size: 11px; 
+                font-weight: bold;
+                border-radius: 4px;
+            }
+        """)
+        self.btn_more_abbr.setPopupMode(QToolButton.ToolButtonPopupMode.InstantPopup)
+        
+        self.ab_menu = QMenu(self.btn_more_abbr)
+        
+        # Submenu 1: Seforim & Commentators
+        menu_seforim = self.ab_menu.addMenu(t("abbr_group_seforim"))
+        seforim_abbrs = [
+            ('רש"י', 'רש"י'),
+            ('תוס\'', 'תוספות'),
+            ('רמב"ם', 'רמב"ם'),
+            ('ראב"ד', 'ראב"ד'),
+            ('רי"ף', 'רי"ף'),
+            ('רא"ש', 'רא"ש'),
+            ('משנה', 'משנה'),
+            ('ברייתא', 'ברייתא'),
+            ('גמ\'', 'גמרא'),
+            ('שו"ע', 'שולחן ערוך'),
+            ('טו"ר', 'טור')
+        ]
+        for a, full in seforim_abbrs:
+            act = QAction(f"{a}  ({full})", self)
+            act.triggered.connect(lambda checked, text=a: self.insert_text(text))
+            menu_seforim.addAction(act)
+
+        menu_terms = self.ab_menu.addMenu(t("abbr_group_talmud"))
+        term_abbrs = [
+            ('בס"ד', 'בס"ד'),
+            ('נפק"מ', 'נפקא מינה'),
+            ('קמ"ל', 'קא משמע לן'),
+            ('סד"א', 'סלקא דעתך אמינא'),
+            ('ח"נ', 'חצי נזק'),
+            ('נ"ש', 'נזק שלם'),
+            ('ברה"ר', 'רשות הרבים'),
+            ('ברה"י', 'רשות היחיד'),
+            ('עיי"ש', 'עיין שם'),
+            ('עכ"ד', 'עד כאן דבריו'),
+            ('וכו\'', 'וכולי'),
+            ('וגו\'', 'וגומר')
+        ]
+        for a, full in term_abbrs:
+            act = QAction(f"{a}  ({full})", self)
+            act.triggered.connect(lambda checked, text=a: self.insert_text(text))
+            menu_terms.addAction(act)
+
+        self.btn_more_abbr.setMenu(self.ab_menu)
         self.abbrev_bar.addWidget(self.btn_more_abbr)
 
         self.abbrev_bar.addStretch()
@@ -126,7 +174,7 @@ class HebrewTextEditor(QWidget):
 
     def retranslate_ui(self):
         self.lbl_quick.setText(t("editor_quick_abbr"))
-        self.btn_more_abbr.setText(t("editor_more_abbr"))
+        self.btn_more_abbr.setText(t("abbr_menu_title"))
         self._update_stats()
 
     def insert_text(self, text: str):
