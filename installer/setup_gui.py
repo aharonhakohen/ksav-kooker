@@ -174,7 +174,7 @@ timeout /t 3
             key_path = r"Software\Microsoft\Windows\CurrentVersion\Uninstall\KsavKooker"
             with winreg.CreateKey(winreg.HKEY_CURRENT_USER, key_path) as key:
                 winreg.SetValueEx(key, "DisplayName", 0, winreg.REG_SZ, "Ksav Kooker (כתב קוקער)")
-                winreg.SetValueEx(key, "DisplayVersion", 0, winreg.REG_SZ, "1.0.1")
+                winreg.SetValueEx(key, "DisplayVersion", 0, winreg.REG_SZ, "1.1.0")
                 winreg.SetValueEx(key, "Publisher", 0, winreg.REG_SZ, "Torah u'Mesorah Lakewood Teachers Center")
                 winreg.SetValueEx(key, "DisplayIcon", 0, winreg.REG_SZ, ico_path)
                 winreg.SetValueEx(key, "InstallLocation", 0, winreg.REG_SZ, target_dir)
@@ -192,7 +192,7 @@ class ModernSetupWizard(QWizard):
         super().__init__()
         self.source_app_dir = source_app_dir
         self.installed_exe_path = ""
-        self.setWindowTitle("Ksav Kooker Setup — התקנת כתב קוקער (v1.0.1)")
+        self.setWindowTitle("Ksav Kooker Setup — התקנת כתב קוקער (v1.1.0)")
         self.resize(720, 520)
         self.setWizardStyle(QWizard.WizardStyle.ModernStyle)
 
@@ -284,7 +284,7 @@ class ModernSetupWizard(QWizard):
         lbl_hdr.setStyleSheet("font-size: 18px; font-weight: bold; color: #89b4fa;")
         right_box.addWidget(lbl_hdr)
 
-        lbl_ver = QLabel("גרסה 1.0.1 (Offline Edition)")
+        lbl_ver = QLabel("גרסה 1.1.0 (Offline Edition)")
         lbl_ver.setStyleSheet("font-size: 12px; font-weight: bold; color: #a6e3a1;")
         right_box.addWidget(lbl_ver)
 

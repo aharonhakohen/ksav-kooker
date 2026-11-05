@@ -13,7 +13,7 @@ from PyQt6.QtWidgets import (
     QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, 
     QSplitter, QListWidget, QListWidgetItem, QPushButton, 
     QLabel, QProgressBar, QFileDialog, QMessageBox, 
-    QToolBar, QStatusBar, QFrame, QInputDialog
+    QToolBar, QStatusBar, QFrame, QInputDialog, QComboBox
 )
 from PyQt6.QtCore import Qt, QThread, pyqtSignal, QSize
 from PyQt6.QtGui import QIcon, QPixmap, QImage, QAction
@@ -78,6 +78,7 @@ class MainWindow(QMainWindow):
         self.active_worker = None
 
         self._init_ui()
+        self._refresh_profiles_ui()
         self.apply_theme()
 
     def _init_ui(self):
@@ -156,9 +157,26 @@ class MainWindow(QMainWindow):
 
         bar.addStretch()
 
-        # Learned Rules Manager
+        # Profile Selector
+        lbl_prof = QLabel("👤 כתב יד:")
+        lbl_prof.setStyleSheet("color: #a6adc8; font-weight: bold;")
+        bar.addWidget(lbl_prof)
+
+        self.combo_profile = QComboBox()
+        self.combo_profile.setToolTip("פרופיל כתב היד הפעיל (בחר להחלפה בין כותבים/תלמידים שונים)")
+        self.combo_profile.setMinimumWidth(160)
+        self.combo_profile.currentIndexChanged.connect(self._on_profile_combo_changed)
+        bar.addWidget(self.combo_profile)
+
+        btn_new_prof_quick = QPushButton("+")
+        btn_new_prof_quick.setToolTip("יצירת פרופיל כתב יד חדש")
+        btn_new_prof_quick.setMaximumWidth(28)
+        btn_new_prof_quick.clicked.connect(self._quick_new_profile)
+        bar.addWidget(btn_new_prof_quick)
+
+        # Learned Rules & Profile Manager
         btn_dict = QPushButton("🧠 מנהל הזיכרון")
-        btn_dict.setToolTip("פתח את מאגר הכללים הנלמדים וראשי התיבות")
+        btn_dict.setToolTip("פתח את מנהל הזיכרון, הפרופילים, הגיבוי והשחזור")
         btn_dict.clicked.connect(self.open_dictionary_manager)
         bar.addWidget(btn_dict)
 
@@ -511,9 +529,47 @@ class MainWindow(QMainWindow):
         else:
             QMessageBox.information(self, "זיכרון", "לא זוהו מילים חדשות ללמידה בעמוד זה (הכל כבר מעודכן בזיכרון).")
 
+    def _refresh_profiles_ui(self):
+        self.combo_profile.blockSignals(True)
+        self.combo_profile.clear()
+        profiles = self.learning_engine.list_profiles()
+        active_pid = self.learning_engine.get_active_profile_id()
+        selected_idx = 0
+        for idx, p in enumerate(profiles):
+            self.combo_profile.addItem(f"{p['name']} ({p['rule_count']} כללים)", p["id"])
+            if p["id"] == active_pid:
+                selected_idx = idx
+        self.combo_profile.setCurrentIndex(selected_idx)
+        self.combo_profile.blockSignals(False)
+
+    def _on_profile_combo_changed(self, index):
+        if index < 0:
+            return
+        pid = self.combo_profile.currentData()
+        if pid and pid != self.learning_engine.get_active_profile_id():
+            self.learning_engine.set_active_profile(pid)
+            self.update_learned_count_badge()
+            self.lbl_status.setText(f"הוחלף לפרופיל כתב יד: {self.learning_engine.get_active_profile_name()}")
+
+    def _quick_new_profile(self):
+        name, ok = QInputDialog.getText(self, "פרופיל כתב יד חדש", "שם הפרופיל החדש (למשל: שם התלמיד/מחברת):")
+        if ok and name.strip():
+            try:
+                pid = self.learning_engine.create_profile(name.strip())
+                self.learning_engine.set_active_profile(pid)
+                self._refresh_profiles_ui()
+                self.update_learned_count_badge()
+                self.lbl_status.setText(f"נוצר פרופיל פעיל חדש: {name.strip()}")
+            except Exception as e:
+                QMessageBox.critical(self, "שגיאה", f"נכשל ביצירת פרופיל: {str(e)}")
+
     def update_learned_count_badge(self):
         rules = self.learning_engine.get_all_replacements(active_only=True)
-        self.lbl_learned_counter.setText(f"כללים נלמדים פעילים: {len(rules):,}")
+        enabled_count = len(self.learning_engine.get_enabled_profile_ids())
+        stack_info = f" (משולב {enabled_count} פרופילים)" if enabled_count > 1 else ""
+        self.lbl_learned_counter.setText(
+            f"כללים פעילים: {len(rules):,} [{self.learning_engine.get_active_profile_name()}]{stack_info}"
+        )
 
     def export_to_docx_dialog(self):
         if not self.pages:
@@ -570,6 +626,7 @@ class MainWindow(QMainWindow):
     def open_dictionary_manager(self):
         dlg = DictionaryManagerDialog(self.learning_engine, self)
         dlg.exec()
+        self._refresh_profiles_ui()
         self.update_learned_count_badge()
 
     def open_about_dialog(self):
