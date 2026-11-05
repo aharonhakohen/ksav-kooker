@@ -18,6 +18,5 @@ scratch/
 *.db
 *.sqlite
 
-# Large Model weights (downloaded / bundled locally)
+# Large Model weights (downloaded via scripts/download_model.py or bundled in releases)
 model_assets/*.pt
-model_assets/*.pkl
