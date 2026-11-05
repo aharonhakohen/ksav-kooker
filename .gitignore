@@ -7,6 +7,10 @@ __pycache__/
 build/
 dist/
 *.exe
+*.spec
+
+# Local developer configuration & deployment paths
+local_deploy.txt
 
 # Temporary files & logs
 *.log
