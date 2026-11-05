@@ -93,11 +93,22 @@ def build():
     ]
     subprocess.check_call(installer_cmd, cwd=BASE_DIR)
 
-    # 4. Deploy to Google Drive
-    target_drive = r"M:\My Drive\Personal\Dovid Shmaryahu\Notes App"
-    if os.path.exists(target_drive):
+    # 4. Deploy to custom staging directory (configured via local_deploy.txt or KSAV_KOOKER_DEPLOY_DIR)
+    target_drive = os.environ.get("KSAV_KOOKER_DEPLOY_DIR")
+    if not target_drive:
+        deploy_cfg = os.path.join(BASE_DIR, "local_deploy.txt")
+        if os.path.exists(deploy_cfg):
+            try:
+                with open(deploy_cfg, "r", encoding="utf-8") as f:
+                    candidate = f.read().strip()
+                    if candidate and os.path.exists(candidate):
+                        target_drive = candidate
+            except Exception:
+                pass
+
+    if target_drive and os.path.exists(target_drive):
         try:
-            print(f"\nDeploying artifacts to Google Drive: {target_drive}...")
+            print(f"\nDeploying artifacts to destination: {target_drive}...")
             
             # 1. Setup wizard
             shutil.copy2(setup_exe, os.path.join(target_drive, "KsavKooker_Setup.exe"))
@@ -115,9 +126,9 @@ def build():
             shutil.copytree(app_output, drive_app_dir)
             print(f" -> Deployed unpacked app directory to {drive_app_dir}")
 
-            print("\n[ALL DELIVERABLES READY AND DEPLOYED TO GOOGLE DRIVE]")
+            print("\n[ALL DELIVERABLES READY AND DEPLOYED]")
         except Exception as e:
-            print(f"Notice: Google Drive deployment error: {e}")
+            print(f"Notice: Deployment error: {e}")
 
 if __name__ == "__main__":
     build()

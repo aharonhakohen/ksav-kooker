@@ -94,8 +94,18 @@ DEFAULT_VOCABULARY = [
 class LearningEngine:
     def __init__(self, db_path: str = None):
         if db_path is None:
-            # Default to user appdata or local directory
-            app_dir = os.path.join(os.path.expanduser("~"), ".torah_notes_ocr")
+            # 1. Custom directory override via environment variable
+            custom_dir = os.environ.get("KSAV_KOOKER_DATA_DIR")
+            if custom_dir:
+                app_dir = custom_dir
+            else:
+                # 2. Windows Roaming AppData (ensures learned rules roam with domain user profiles across workstations)
+                roaming_appdata = os.environ.get("APPDATA")
+                if roaming_appdata:
+                    app_dir = os.path.join(roaming_appdata, "KsavKooker")
+                else:
+                    # 3. Fallback to user home directory
+                    app_dir = os.path.join(os.path.expanduser("~"), ".ksav_kooker")
             os.makedirs(app_dir, exist_ok=True)
             db_path = os.path.join(app_dir, "learned_corrections.db")
         self.db_path = db_path

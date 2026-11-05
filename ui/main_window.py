@@ -527,7 +527,7 @@ class MainWindow(QMainWindow):
         subtitle, ok2 = QInputDialog.getText(self, "ייצוא לוורד", "תת-כותרת (פרק / זמן):", text="פרק כיצד הרגל | זמן חורף")
         if not ok2:
             return
-        author, ok3 = QInputDialog.getText(self, "ייצוא לוורד", "שם הכותב / הערות מאת:", text="ר' דוד שמריהו")
+        author, ok3 = QInputDialog.getText(self, "ייצוא לוורד", "שם הכותב / הערות מאת:", text="")
         if not ok3:
             return
 

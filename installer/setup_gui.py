@@ -103,22 +103,89 @@ class InstallWorker(QThread):
                     "Ksav Kooker - Offline Torah Notes OCR Studio"
                 )
 
+            # Register in Windows Add/Remove Programs (HKCU Uninstall)
+            self._register_uninstall(self.target_dir, exe_path, ico_path)
+
             self.progress.emit(100, "ההתקנה הושלמה בהצלחה!")
             self.finished.emit(True, exe_path)
         except Exception as e:
             self.finished.emit(False, str(e))
 
     def _create_shortcut(self, lnk_path: str, target_exe: str, icon_path: str, description: str):
+        """Creates Windows shortcut (.lnk) with hardened parameters and string escaping."""
+        lnk_esc = lnk_path.replace("'", "''")
+        target_esc = target_exe.replace("'", "''")
+        dir_esc = os.path.dirname(target_exe).replace("'", "''")
+        ico_esc = icon_path.replace("'", "''")
+        desc_esc = description.replace("'", "''")
         ps_cmd = f"""
         $ws = New-Object -ComObject WScript.Shell;
-        $s = $ws.CreateShortcut('{lnk_path}');
-        $s.TargetPath = '{target_exe}';
-        $s.WorkingDirectory = '{os.path.dirname(target_exe)}';
-        $s.IconLocation = '{icon_path}';
-        $s.Description = '{description}';
+        $s = $ws.CreateShortcut('{lnk_esc}');
+        $s.TargetPath = '{target_esc}';
+        $s.WorkingDirectory = '{dir_esc}';
+        $s.IconLocation = '{ico_esc}';
+        $s.Description = '{desc_esc}';
         $s.Save();
         """
-        subprocess.run(["powershell", "-Command", ps_cmd], capture_output=True, creationflags=0x08000000)
+        subprocess.run(
+            ["powershell", "-NoProfile", "-NonInteractive", "-ExecutionPolicy", "Bypass", "-Command", ps_cmd],
+            capture_output=True,
+            creationflags=0x08000000
+        )
+
+    def _register_uninstall(self, target_dir: str, exe_path: str, ico_path: str):
+        """Registers the application in Windows Settings / Control Panel Installed Apps."""
+        import winreg
+        try:
+            uninstaller_bat = os.path.join(target_dir, "uninstall.bat")
+            desktop_lnk = os.path.join(os.path.expanduser("~"), "Desktop", "Ksav Kooker.lnk")
+            start_menu_dir = os.path.join(
+                os.environ.get("APPDATA", ""), 
+                r"Microsoft\Windows\Start Menu\Programs\Ksav Kooker"
+            )
+            
+            # Generate clean uninstaller batch script
+            bat_content = f"""@echo off
+title Uninstalling Ksav Kooker...
+echo ===================================================
+echo Uninstalling Ksav Kooker (כתב קוקער)...
+echo ===================================================
+
+echo [1/3] Removing desktop and start menu shortcuts...
+if exist "{desktop_lnk}" del /f /q "{desktop_lnk}"
+if exist "{start_menu_dir}" rmdir /s /q "{start_menu_dir}"
+
+echo [2/3] Removing Windows registry entry...
+reg delete "HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\KsavKooker" /f >nul 2>&1
+
+echo [3/3] Removing application files...
+cd /d "%TEMP%"
+start /b "" cmd /c timeout /t 2 /nobreak ^>nul ^& rmdir /s /q "{target_dir}"
+
+echo.
+echo Ksav Kooker has been removed from your computer.
+echo.
+timeout /t 3
+"""
+            with open(uninstaller_bat, "w", encoding="utf-8") as f:
+                f.write(bat_content)
+
+            # Write Windows Registry entry under HKCU
+            key_path = r"Software\Microsoft\Windows\CurrentVersion\Uninstall\KsavKooker"
+            with winreg.CreateKey(winreg.HKEY_CURRENT_USER, key_path) as key:
+                winreg.SetValueEx(key, "DisplayName", 0, winreg.REG_SZ, "Ksav Kooker (כתב קוקער)")
+                winreg.SetValueEx(key, "DisplayVersion", 0, winreg.REG_SZ, "1.0.1")
+                winreg.SetValueEx(key, "Publisher", 0, winreg.REG_SZ, "Torah u'Mesorah Lakewood Teachers Center")
+                winreg.SetValueEx(key, "DisplayIcon", 0, winreg.REG_SZ, ico_path)
+                winreg.SetValueEx(key, "InstallLocation", 0, winreg.REG_SZ, target_dir)
+                winreg.SetValueEx(key, "UninstallString", 0, winreg.REG_SZ, f'"{uninstaller_bat}"')
+                winreg.SetValueEx(key, "QuietUninstallString", 0, winreg.REG_SZ, f'cmd /c "{uninstaller_bat}"')
+                winreg.SetValueEx(key, "EstimatedSize", 0, winreg.REG_DWORD, 1180000)
+                winreg.SetValueEx(key, "URLInfoAbout", 0, winreg.REG_SZ, "https://github.com/aharonhakohen/ksav-kooker")
+                winreg.SetValueEx(key, "NoModify", 0, winreg.REG_DWORD, 1)
+                winreg.SetValueEx(key, "NoRepair", 0, winreg.REG_DWORD, 1)
+        except Exception as err:
+            print(f"Notice: Windows uninstall registration: {err}")
 
 class ModernSetupWizard(QWizard):
     def __init__(self, source_app_dir: str):
