@@ -1,4 +1,4 @@
-# Ksav Kooker (כתב קוקער) — v1.1.0
+# Ksav Kooker (כתב קוקער) — v1.1.1
 ### Offline Torah Notes & Hebrew Handwriting OCR Studio
 *דער קלוגער כתב-קוקער פאר שיעורים און חידושי תורה*
 
@@ -23,35 +23,39 @@ Ksav Kooker features a **continuous self-learning memory engine**: when you corr
 
 ## ✨ Key Features
 
-1. **100% Offline Neural OCR Engine**
+1. **English Default Interface with Dynamic Language Toggle (New in v1.1.1)**
+   - All menu options, buttons, headers, tooltips, dialogs, and setup wizard are in clean, modern English by default.
+   - Includes a **"🌐 עברית / English"** top-bar toggle for instant runtime switching to Hebrew with one click.
+
+2. **100% Offline Neural OCR Engine**
    - Employs a CTC neural vision model (Mishkefet-v1 architecture) specifically tuned for handwritten Hebrew cursive on standard laptop CPUs.
    - Zero internet connectivity required: full privacy, zero cloud uploads, completely secure for personal notebooks.
    - Built-in character n-gram and word unigram language models for disambiguating visually similar Hebrew letters.
 
-2. **Multi-User Handwriting Profiles & Stacking (New in v1.1.0)**
+3. **Multi-User Handwriting Profiles & Stacking (v1.1.0)**
    - **Isolated Profiles**: Create dedicated learning profiles for different people (individual students, scribes, rebbeim, or notebook styles) stored in `%APPDATA%\KsavKooker\profiles\`.
    - **Top-Bar Profile Switcher**: Instantly switch the active profile directly from the top toolbar without restarting.
    - **Multi-Profile Stacking**: Check multiple profiles simultaneously in the profile manager; Ksav Kooker combines rules from all enabled people during OCR scans.
    - **Preloaded Yeshiva / Rabbinic Lexicon**: Out of the box, recognizes over 50 common Talmudic abbreviations (*ראשי תיבות*) including רש"י, תוס', רמב"ם, ראב"ד, רי"ף, רא"ש, גמ', נפק"מ, קמ"ל, ח"נ, נ"ש, סד"א, ברה"ר, ברה"י, etc.
 
-3. **Backup, Restore & Knowledge Merging Center (New in v1.1.0)**
+4. **Backup, Restore & Knowledge Merging Center (v1.1.0)**
    - **Instant Quick Backup**: One-click timestamped `.ksavbackup` saved directly to your local backups repository.
    - **Custom Save & Restore**: Save backups to USB drives or network storage, and restore safely with automatic pre-backup protection.
    - **Rule Merging**: Import and combine a colleague's or teacher's learned rules directly into your active profile without erasing your existing rules.
    - **JSON Sharing**: Export/import clean JSON files for easy sharing.
 
-4. **Modern, Clean, High-DPI Desktop Interface**
+5. **Modern, Clean, High-DPI Desktop Interface**
    - **Side-by-Side Review**: Compare original handwritten notes on the left directly against transcribed text on the right.
    - **Multi-Image Navigation**: Attach one or multiple pages (via drag-and-drop or file dialog) with thumbnail selector.
    - **Document Viewer Tools**: Smooth mouse-wheel zoom, panning, 90° rotation, and an ink-enhancer filter to make faint pencil notes legible.
    - **Hebrew Right-To-Left (RTL) Editor**: Full bidirectional cursor support, David/Arial fonts, live character/word counters, and a quick-insertion Roshei Teivot toolbar.
 
-5. **Professional Microsoft Word (.docx) Export**
+6. **Professional Microsoft Word (.docx) Export**
    - Generates properly tagged Right-to-Left Word documents with 1-inch margins, centered title headers, bold shiur markers, and page breaks between notebook pages.
 
-6. **Self-Contained Setup Wizard & Portable Distribution**
+7. **Self-Contained Setup Wizard & Portable Distribution**
    - Available as a standalone Windows Setup Wizard (`KsavKooker_Setup.exe`) that installs to `%LocalAppData%\Programs\Ksav Kooker` without admin rights.
-   - Also available as a zero-install portable zip package (`KsavKooker-v1.1.0-Windows.zip`).
+   - Also available as a zero-install portable zip package (`KsavKooker-v1.1.1-Windows.zip`).
 
 ---
 
@@ -59,11 +63,11 @@ Ksav Kooker features a **continuous self-learning memory engine**: when you corr
 
 ### Option 1: Windows Setup Wizard (Recommended)
 1. Download **`KsavKooker_Setup.exe`** from the [Releases](https://github.com/aharonhakohen/ksav-kooker/releases) page.
-2. Run the installer and click **התקן עכשיו (Install Now)**.
+2. Run the installer and click **Next >** and **Install**.
 3. Launch **Ksav Kooker** from your Desktop or Start Menu.
 
 ### Option 2: Portable Zip
-1. Download **`KsavKooker-v1.1.0-Windows.zip`**.
+1. Download **`KsavKooker-v1.1.1-Windows.zip`**.
 2. Unzip to any folder on your laptop or USB drive.
 3. Double-click **`KsavKooker.exe`**.
 
@@ -72,27 +76,27 @@ Ksav Kooker features a **continuous self-learning memory engine**: when you corr
 ## 📝 User Workflow
 
 ```
-[ Attach Photos ] ──> [ Select Profile ] ──> [ Rotate / Orient ] ──> [ ⚡ Scan OCR ] 
+[ Attach Pages ] ──> [ Select Profile ] ──> [ Rotate / Orient ] ──> [ ⚡ Scan OCR ] 
                                                                            │
                                                                            ▼
 [ 📝 Export .docx ] <── [ 💾 Save & Learn Corrections ] <── [ Side-by-Side Proofread ]
 ```
 
-1. **Select Profile**: Select your active handwriting profile from the **👤 כתב יד** dropdown in the top bar.
-2. **Attach Photos**: Click **"📁 צרף תמונות"** or drag-and-drop JPG/PNG/WEBP images into the window.
+1. **Select Profile**: Select your active handwriting profile from the **👤 Profile** dropdown in the top bar.
+2. **Attach Pages**: Click **"📁 Attach Pages"** or drag-and-drop JPG/PNG/WEBP images into the window.
 3. **Rotate if needed**: If a photo was taken sideways, click **"↻ 90°"** to orient it upright.
-4. **Scan (OCR)**: Click **"⚡ סרוק עמוד נוכחי"** (or **"⚡⚡ סרוק הכל"** for batch scans).
+4. **Scan (OCR)**: Click **"⚡ Scan Current Page"** (or **"⚡⚡ Scan All Pages"** for batch scans).
 5. **Proofread & Correct**: Read through the transcription side-by-side with the original photo, correcting typos.
-6. **Learn**: Click **"💾 שמור ולמד תיקונים"**. The system immediately saves your corrections into the active profile.
-7. **Export**: Click **"📝 ייצוא לוורד (.docx)"** to create your formatted Word document.
+6. **Learn**: Click **"💾 Save & Learn Corrections"**. The system immediately saves your corrections into the active profile.
+7. **Export**: Click **"📝 Export to Word (.docx)"** to create your formatted Word document.
 
 ---
 
 ## 🧠 Memory, Profiles & Backup Studio
-Click **"🧠 מנהל הזיכרון"** in the top bar to:
-- **📚 כללים נלמדים**: View, search, edit, or delete active rules in the current profile.
-- **👥 פרופילים ומשתמשים**: Manage separate profiles for different scribes or students, and check boxes to enable multi-profile stacking.
-- **💾 גיבוי ושחזור**: Perform instant timestamped backups, restore from files, or merge external rules into your active profile.
+Click **"🧠 Memory Studio"** in the top bar to:
+- **📚 Learned Rules**: View, search, edit, or delete active rules in the current profile.
+- **👥 Profiles & Scribes**: Manage separate profiles for different scribes or students, and check boxes to enable multi-profile stacking.
+- **💾 Backup & Restore**: Perform instant timestamped backups, restore from files, or merge external rules into your active profile.
 
 ---
 
