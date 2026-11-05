@@ -45,7 +45,18 @@ class AboutDialog(QDialog):
         lbl_title.setStyleSheet("font-size: 22px; font-weight: bold; color: #89b4fa;")
         title_box.addWidget(lbl_title)
 
-        lbl_ver = QLabel("גרסה 1.0.0  •  Version 1.0.0 (Offline Edition)")
+        # Load version info
+        ver_str = "1.0.1"
+        try:
+            ver_path = os.path.join(base_dir, "version.json")
+            if os.path.exists(ver_path):
+                with open(ver_path, "r", encoding="utf-8") as vf:
+                    vdata = json.load(vf)
+                    ver_str = vdata.get("version", ver_str)
+        except Exception:
+            pass
+
+        lbl_ver = QLabel(f"גרסה {ver_str}  •  Version {ver_str} (Offline Edition)")
         lbl_ver.setStyleSheet("font-size: 13px; font-weight: 600; color: #a6e3a1;")
         title_box.addWidget(lbl_ver)
 

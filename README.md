@@ -1,4 +1,4 @@
-# Ksav Kooker (כתב קוקער) — v1.0.0
+# Ksav Kooker (כתב קוקער) — v1.0.1
 ### Offline Torah Notes & Hebrew Handwriting OCR Studio
 *דער קלוגער כתב-קוקער פאר שיעורים און חידושי תורה*
 

@@ -27,7 +27,7 @@ def create_payload_zip(src_dir: str, out_zip: str):
 
 def build():
     print("=" * 70)
-    print("Building Ksav Kooker v1.0.0 Standalone Offline Package")
+    print("Building Ksav Kooker v1.0.1 Standalone Offline Package")
     print("=" * 70)
 
     dist_dir = os.path.join(BASE_DIR, "dist")
@@ -38,11 +38,18 @@ def build():
     payload_zip = os.path.join(dist_dir, "payload.zip")
     setup_exe = os.path.join(dist_dir, "KsavKooker_Setup.exe")
 
-    # 1. Build Main Application (KsavKooker.exe onedir) if not already built
-    if not os.path.exists(app_exe):
-        print("\n[1/3] Compiling KsavKooker.exe directory with PyInstaller...")
+    # 1. Build Main Application (KsavKooker.exe onedir) if not built or if branding/version updated
+    needs_app_rebuild = (
+        not os.path.exists(app_exe) or 
+        os.path.getmtime(ico_path) > os.path.getmtime(app_exe)
+    )
+    if needs_app_rebuild:
+        print("\n[1/3] Compiling KsavKooker.exe directory with updated branding and version...")
+        if os.path.exists(app_output):
+            shutil.rmtree(app_output)
         cmd = [
             sys.executable, "-m", "PyInstaller",
+            "--noconfirm",
             "--name=KsavKooker",
             "--noconsole",
             "--onedir",
@@ -74,6 +81,7 @@ def build():
     print("\n[3/3] Compiling KsavKooker_Setup.exe Self-Extracting Installer Wizard...")
     installer_cmd = [
         sys.executable, "-m", "PyInstaller",
+        "--noconfirm",
         "--name=KsavKooker_Setup",
         "--noconsole",
         "--onefile",
@@ -96,7 +104,7 @@ def build():
             print(f" -> Deployed KsavKooker_Setup.exe")
 
             # 2. Portable zip
-            portable_zip = os.path.join(target_drive, "KsavKooker-v1.0.0-Windows.zip")
+            portable_zip = os.path.join(target_drive, "KsavKooker-v1.0.1-Windows.zip")
             shutil.copy2(payload_zip, portable_zip)
             print(f" -> Deployed portable zip to {portable_zip}")
 
