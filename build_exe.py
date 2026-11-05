@@ -55,6 +55,8 @@ def build(force_rebuild: bool = False):
         os.path.join(BASE_DIR, "main.py"),
         os.path.join(BASE_DIR, "ui", "main_window.py"),
         os.path.join(BASE_DIR, "ui", "dictionary_dialog.py"),
+        os.path.join(BASE_DIR, "ui", "text_editor.py"),
+        os.path.join(BASE_DIR, "ui", "i18n.py"),
         os.path.join(BASE_DIR, "core", "learning_engine.py"),
         ico_path
     ]

@@ -3,6 +3,7 @@
 TorahNotesOCR - Hebrew RTL Text Editor
 Full Right-to-Left (RTL) editing with Torah abbreviations toolbar,
 line/word statistics, and mistake tracking.
+Supports internationalized English and Hebrew labels.
 """
 
 from PyQt6.QtWidgets import (
@@ -13,6 +14,8 @@ from PyQt6.QtCore import Qt, pyqtSignal
 from PyQt6.QtGui import QFont, QTextCursor, QTextOption, QAction
 import difflib
 import re
+
+from ui.i18n import t
 
 COMMON_ABBREVIATIONS = [
     ("בס\"ד", "בס\"ד"),
@@ -56,9 +59,9 @@ class HebrewTextEditor(QWidget):
         self.abbrev_bar = QHBoxLayout()
         self.abbrev_bar.setSpacing(4)
         
-        lbl_quick = QLabel("קיצורים מהירים:")
-        lbl_quick.setStyleSheet("font-weight: bold; color: #89b4fa; font-size: 11px;")
-        self.abbrev_bar.addWidget(lbl_quick)
+        self.lbl_quick = QLabel(t("editor_quick_abbr"))
+        self.lbl_quick.setStyleSheet("font-weight: bold; color: #89b4fa; font-size: 11px;")
+        self.abbrev_bar.addWidget(self.lbl_quick)
 
         for abbr, full in COMMON_ABBREVIATIONS[:8]:
             btn = QPushButton(abbr)
@@ -76,7 +79,7 @@ class HebrewTextEditor(QWidget):
             self.abbrev_bar.addWidget(btn)
 
         # More abbreviations menu
-        self.btn_more_abbr = QPushButton("עוד ▾")
+        self.btn_more_abbr = QPushButton(t("editor_more_abbr"))
         self.btn_more_abbr.setFixedHeight(24)
         more_menu = QMenu(self)
         for abbr, full in COMMON_ABBREVIATIONS[8:]:
@@ -89,16 +92,14 @@ class HebrewTextEditor(QWidget):
         self.abbrev_bar.addStretch()
         layout.addLayout(self.abbrev_bar)
 
-        # Text Edit Area
+        # Text Edit Area (Hebrew RTL)
         self.text_edit = QTextEdit()
         self.text_edit.setLayoutDirection(Qt.LayoutDirection.RightToLeft)
         
-        # Typography: David / Segoe UI / Arial
         font = QFont("David", 15)
         font.setStyleHint(QFont.StyleHint.Serif)
         self.text_edit.setFont(font)
-        
-        # Word wrap & RTL alignment
+
         opt = self.text_edit.document().defaultTextOption()
         opt.setTextDirection(Qt.LayoutDirection.RightToLeft)
         opt.setAlignment(Qt.AlignmentFlag.AlignRight)
@@ -110,16 +111,23 @@ class HebrewTextEditor(QWidget):
 
         # Stats bar
         self.stats_bar = QHBoxLayout()
-        self.lbl_stats = QLabel("מילים: 0 | תווים: 0 | שורות: 0")
+        self.lbl_stats = QLabel("")
         self.lbl_stats.setStyleSheet("color: #a6adc8; font-size: 11px;")
         
-        self.lbl_corrections = QLabel("תיקונים שבוצעו: 0")
+        self.lbl_corrections = QLabel("")
         self.lbl_corrections.setStyleSheet("color: #a6e3a1; font-weight: bold; font-size: 11px;")
 
         self.stats_bar.addWidget(self.lbl_stats)
         self.stats_bar.addStretch()
         self.stats_bar.addWidget(self.lbl_corrections)
         layout.addLayout(self.stats_bar)
+        
+        self._update_stats()
+
+    def retranslate_ui(self):
+        self.lbl_quick.setText(t("editor_quick_abbr"))
+        self.btn_more_abbr.setText(t("editor_more_abbr"))
+        self._update_stats()
 
     def insert_text(self, text: str):
         cursor = self.text_edit.textCursor()
@@ -150,7 +158,7 @@ class HebrewTextEditor(QWidget):
         words = len(re.findall(r'\S+', text))
         chars = len(text)
         lines = len(text.splitlines()) if text else 0
-        self.lbl_stats.setText(f"מילים: {words:,} | תווים: {chars:,} | שורות: {lines:,}")
+        self.lbl_stats.setText(t("editor_stats", words=words, chars=chars, lines=lines))
 
         # Compute corrections count vs raw OCR
         if self.original_raw_text and self.original_raw_text != text:
@@ -158,8 +166,8 @@ class HebrewTextEditor(QWidget):
             cur_words = re.findall(r'\S+', text)
             sm = difflib.SequenceMatcher(None, raw_words, cur_words)
             diff_count = sum(1 for tag, _, _, _, _ in sm.get_opcodes() if tag in ('replace', 'delete', 'insert'))
-            self.lbl_corrections.setText(f"תיקונים שזוהו: {diff_count} (מוכן ללמידה ✓)")
+            self.lbl_corrections.setText(t("editor_diff_ready", count=diff_count))
             self.lbl_corrections.setStyleSheet("color: #a6e3a1; font-weight: bold; font-size: 11px;")
         else:
-            self.lbl_corrections.setText("טרם בוצעו תיקונים")
+            self.lbl_corrections.setText(t("editor_diff_none"))
             self.lbl_corrections.setStyleSheet("color: #a6adc8; font-size: 11px;")

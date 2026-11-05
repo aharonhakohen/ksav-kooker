@@ -3,17 +3,17 @@
   "appNameHebrew": "כתב קוקער",
   "tagline": "Offline Torah Notes & Handwriting OCR Studio",
   "taglineYiddish": "דער קלוגער כתב-קוקער פאר שיעורים און חידושי תורה",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "releaseDate": "2026-11-04",
-  "releaseTitle": "v1.1.0 — Multi-User Handwriting Profiles, Multi-Profile Stacking & One-Click Backup/Restore Studio",
-  "description": "Ksav Kooker (כתב קוקער) v1.1.0 adds support for multi-user handwriting profiles, multi-profile stacking during OCR scans, and comprehensive backup, restore, and rule-merging tools. Each student, scribe, or book can have an isolated learning memory bank, switch on the fly from the top toolbar, or combine rules from multiple people in a single scan.",
+  "releaseTitle": "v1.1.1 — English Default UI Localization with Dynamic Language Toggle",
+  "description": "Ksav Kooker (כתב קוקער) v1.1.1 configures English as the default UI language across all menus, toolbars, buttons, tooltips, dialogs, and the Windows Setup Wizard, while introducing a dynamic one-click language toggle (🌐 עברית / English) for instant runtime switching.",
   "features": [
-    "Multi-User Handwriting Profiles: Create, rename, duplicate, or delete isolated learning profiles for different people (e.g., individual students, rebbeim, or different notebook styles).",
-    "Instant Profile Switching: Switch active profiles on the fly directly from the top toolbar without restarting the application.",
-    "Multi-Profile Stacking: Check checkboxes in the profile manager to enable multiple profiles simultaneously; Ksav Kooker combines rules from all checked people during OCR scans.",
-    "One-Click Backup & Restore: Create timestamped .ksavbackup files with a single click, save backups to USB or cloud drives, and safely restore profiles.",
-    "Knowledge Merging: Seamlessly merge a colleague's or teacher's learned rules and abbreviations into your active profile without erasing your existing rules.",
-    "Optimized Package Size: Excluded unused sub-libraries, reducing memory footprint and download size.",
-    "100% Offline & Roaming Profile Compatible: Fully functional with zero internet connection; profiles roam seamlessly in Windows Server Active Directory domain environments."
+    "English Default Interface: All application menus, buttons, tooltips, and dialogs now display in clean English by default.",
+    "Dynamic Language Switcher: Added a top-toolbar '🌐 עברית / English' button to instantly toggle between English and Hebrew at runtime.",
+    "English Windows Setup Wizard: The installer wizard displays in clear English by default with standard navigation controls.",
+    "Multi-User Handwriting Profiles: Dedicated isolated learning memory banks for different scribes and students.",
+    "Multi-Profile Stacking: Combine rules from multiple people simultaneously during OCR scans.",
+    "One-Click Backup & Restore: Instant timestamped backups, safe restores, and colleague rule merging.",
+    "100% Offline & Roaming Profile Compatible: Runs locally on CPU with zero internet connection required."
   ]
 }

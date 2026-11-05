@@ -174,7 +174,7 @@ timeout /t 3
             key_path = r"Software\Microsoft\Windows\CurrentVersion\Uninstall\KsavKooker"
             with winreg.CreateKey(winreg.HKEY_CURRENT_USER, key_path) as key:
                 winreg.SetValueEx(key, "DisplayName", 0, winreg.REG_SZ, "Ksav Kooker (כתב קוקער)")
-                winreg.SetValueEx(key, "DisplayVersion", 0, winreg.REG_SZ, "1.1.0")
+                winreg.SetValueEx(key, "DisplayVersion", 0, winreg.REG_SZ, "1.1.1")
                 winreg.SetValueEx(key, "Publisher", 0, winreg.REG_SZ, "Torah u'Mesorah Lakewood Teachers Center")
                 winreg.SetValueEx(key, "DisplayIcon", 0, winreg.REG_SZ, ico_path)
                 winreg.SetValueEx(key, "InstallLocation", 0, winreg.REG_SZ, target_dir)
@@ -192,9 +192,14 @@ class ModernSetupWizard(QWizard):
         super().__init__()
         self.source_app_dir = source_app_dir
         self.installed_exe_path = ""
-        self.setWindowTitle("Ksav Kooker Setup — התקנת כתב קוקער (v1.1.0)")
+        self.setWindowTitle("Ksav Kooker Setup — Installation Wizard (v1.1.1)")
         self.resize(720, 520)
         self.setWizardStyle(QWizard.WizardStyle.ModernStyle)
+        self.setLayoutDirection(Qt.LayoutDirection.LeftToRight)
+        self.setButtonText(QWizard.WizardButton.BackButton, "< Back")
+        self.setButtonText(QWizard.WizardButton.NextButton, "Next >")
+        self.setButtonText(QWizard.WizardButton.FinishButton, "Finish")
+        self.setButtonText(QWizard.WizardButton.CancelButton, "Cancel")
 
         # Set Icon
         icon_path = os.path.join(APP_ROOT, "assets", "ksav_kooker.ico")
@@ -280,22 +285,23 @@ class ModernSetupWizard(QWizard):
         right_box = QVBoxLayout()
         right_box.setSpacing(12)
 
-        lbl_hdr = QLabel("ברוכים הבאים להתקנת כתב קוקער\nWelcome to Ksav Kooker Setup")
-        lbl_hdr.setStyleSheet("font-size: 18px; font-weight: bold; color: #89b4fa;")
+        lbl_hdr = QLabel("Welcome to Ksav Kooker Setup")
+        lbl_hdr.setStyleSheet("font-size: 20px; font-weight: bold; color: #89b4fa;")
         right_box.addWidget(lbl_hdr)
 
-        lbl_ver = QLabel("גרסה 1.1.0 (Offline Edition)")
+        lbl_ver = QLabel("Version 1.1.1 (100% Offline Edition)")
         lbl_ver.setStyleSheet("font-size: 12px; font-weight: bold; color: #a6e3a1;")
         right_box.addWidget(lbl_ver)
 
         lbl_desc = QLabel(
-            "אשף זה יתקין את תוכנת <b>כתב קוקער (Ksav Kooker)</b> על מחשבך.<br><br>"
-            "התוכנה פועלת באופן <b>אופליין מלא ללא חיבור לאינטרנט</b>, ומאפשרת:<br>"
-            "• זיהוי כתב יד עברי ורש\"י במחברות שיעורים (OCR)<br>"
-            "• עריכה ותיקון שגיאות בזמן אמת זה לצד זה עם התצלום<br>"
-            "• מנוע זיכרון ולמידה אוטומטי המשפר את הזיהוי בכל סריקה<br>"
-            "• ייצוא ישיר למסמכי Microsoft Word (.docx) מעוצבים מימין לשמאל.<br><br>"
-            "לחץ על 'הבא' כדי להמשיך."
+            "This wizard will install <b>Ksav Kooker (כתב קוקער)</b> on your computer.<br><br>"
+            "Ksav Kooker operates <b>100% offline with zero internet connection required</b>, providing:<br>"
+            "• Offline neural OCR recognition for handwritten Hebrew cursive and print<br>"
+            "• Side-by-side editing and proofreading directly alongside notebook photos<br>"
+            "• Multi-user handwriting profiles and multi-profile rule stacking<br>"
+            "• Self-learning mistake memory engine with one-click backup and restore<br>"
+            "• Formatted Right-to-Left Microsoft Word (.docx) export.<br><br>"
+            "Click <b>Next</b> to continue, or Cancel to exit Setup."
         )
         lbl_desc.setWordWrap(True)
         lbl_desc.setStyleSheet("line-height: 1.4; color: #cdd6f4;")
@@ -307,8 +313,8 @@ class ModernSetupWizard(QWizard):
 
     def _create_destination_page(self) -> QWizardPage:
         page = QWizardPage()
-        page.setTitle("בחירת תיקיית התקנה / Destination Location")
-        page.setSubTitle("בחר את התיקייה שבה תותקן התוכנה במחשב:")
+        page.setTitle("Destination Location")
+        page.setSubTitle("Select the destination folder where Setup will install Ksav Kooker:")
 
         layout = QVBoxLayout(page)
         layout.setSpacing(12)
@@ -317,7 +323,7 @@ class ModernSetupWizard(QWizard):
         # Default path in LocalAppData
         default_dir = os.path.join(os.environ.get("LOCALAPPDATA", os.path.expanduser("~")), "Programs", "Ksav Kooker")
 
-        lbl_prompt = QLabel("תיקיית יעד:")
+        lbl_prompt = QLabel("Destination Folder:")
         lbl_prompt.setStyleSheet("font-weight: bold;")
         layout.addWidget(lbl_prompt)
 
@@ -325,12 +331,12 @@ class ModernSetupWizard(QWizard):
         self.txt_dest = QLineEdit(default_dir)
         dir_box.addWidget(self.txt_dest)
 
-        btn_browse = QPushButton("עיון...")
+        btn_browse = QPushButton("Browse...")
         btn_browse.clicked.connect(self._browse_destination)
         dir_box.addWidget(btn_browse)
         layout.addLayout(dir_box)
 
-        lbl_space = QLabel("מקום פנוי נדרש: כ-550 MB | המערכת מותקנת עצמאית ללא צורך בהתקנת תוכנות עזר נוספות.")
+        lbl_space = QLabel("Required free space: ~450 MB | Standalone installation with zero external dependencies.")
         lbl_space.setStyleSheet("color: #a6adc8; font-size: 11px;")
         layout.addWidget(lbl_space)
 
@@ -344,22 +350,22 @@ class ModernSetupWizard(QWizard):
 
     def _create_options_page(self) -> QWizardPage:
         page = QWizardPage()
-        page.setTitle("אפשרויות נוספות / Additional Tasks")
-        page.setSubTitle("בחר אילו קיצורי דרך ליצור:")
+        page.setTitle("Select Additional Tasks")
+        page.setSubTitle("Select which shortcuts you want Setup to create:")
 
         layout = QVBoxLayout(page)
         layout.setSpacing(14)
         layout.setContentsMargins(20, 20, 20, 20)
 
-        self.chk_desktop = QCheckBox("צור קיצור דרך על שולחן העבודה (Create Desktop Shortcut)")
+        self.chk_desktop = QCheckBox("Create Desktop Shortcut")
         self.chk_desktop.setChecked(True)
         layout.addWidget(self.chk_desktop)
 
-        self.chk_startmenu = QCheckBox("הוסף לתפריט התחלה (Create Start Menu Shortcut)")
+        self.chk_startmenu = QCheckBox("Create Start Menu Shortcut")
         self.chk_startmenu.setChecked(True)
         layout.addWidget(self.chk_startmenu)
 
-        self.chk_launch = QCheckBox("הפעל את כתב קוקער בסיום ההתקנה (Launch Ksav Kooker on Finish)")
+        self.chk_launch = QCheckBox("Launch Ksav Kooker when Setup exits")
         self.chk_launch.setChecked(True)
         layout.addWidget(self.chk_launch)
 
@@ -368,14 +374,14 @@ class ModernSetupWizard(QWizard):
 
     def _create_installing_page(self) -> QWizardPage:
         self.page_installing = QWizardPage()
-        self.page_installing.setTitle("מתקין... / Installing")
-        self.page_installing.setSubTitle("אנא המתן בזמן שכתב קוקער מותקן על מחשבך:")
+        self.page_installing.setTitle("Installing Ksav Kooker...")
+        self.page_installing.setSubTitle("Please wait while Setup installs Ksav Kooker on your computer:")
 
         layout = QVBoxLayout(self.page_installing)
         layout.setSpacing(14)
         layout.setContentsMargins(20, 30, 20, 20)
 
-        self.lbl_install_status = QLabel("מתחיל בהתקנה...")
+        self.lbl_install_status = QLabel("Preparing installation...")
         self.lbl_install_status.setStyleSheet("font-weight: bold; color: #89b4fa;")
         layout.addWidget(self.lbl_install_status)
 
@@ -409,15 +415,15 @@ class ModernSetupWizard(QWizard):
         right_box = QVBoxLayout()
         right_box.setSpacing(12)
 
-        lbl_hdr = QLabel("ההתקנה הושלמה בהצלחה! ✓\nInstallation Complete!")
+        lbl_hdr = QLabel("Installation Complete! ✓")
         lbl_hdr.setStyleSheet("font-size: 20px; font-weight: bold; color: #a6e3a1;")
         right_box.addWidget(lbl_hdr)
 
         lbl_msg = QLabel(
-            "תוכנת <b>כתב קוקער (Ksav Kooker)</b> הותקנה בהצלחה במחשבך.<br><br>"
-            "קיצורי הדרך נוצרו ומוכנים לפעולה.<br>"
-            "התוכנה פועלת באופן עצמאי ואופליין לחלוטין.<br><br>"
-            "לחץ על 'סיום' לסגירת אשף ההתקנה."
+            "<b>Ksav Kooker (כתב קוקער)</b> has been successfully installed on your computer.<br><br>"
+            "Desktop and Start Menu shortcuts have been created.<br>"
+            "The software is ready for 100% offline use with zero internet connection.<br><br>"
+            "Click <b>Finish</b> to exit Setup."
         )
         lbl_msg.setWordWrap(True)
         lbl_msg.setStyleSheet("color: #cdd6f4; font-size: 13px; line-height: 1.5;")
