@@ -46,34 +46,37 @@ def main():
     if os.path.exists(icon_path):
         app.setWindowIcon(QIcon(icon_path))
 
-    # Show Splash Screen
+    # Show Splash Screen centered on active display
     splash = ModernSplashScreen()
+    splash.center_on_screen()
     splash.show()
     app.processEvents()
 
     # Step 1: Initializing
-    splash.set_progress(25, "מאתחל מנוע זיהוי כתב יד אופליין...")
+    splash.set_progress(25, "Initializing offline Hebrew handwriting OCR engine...")
     app.processEvents()
     time.sleep(0.3)
 
     # Step 2: Database
-    splash.set_progress(60, "מאתחל מאגר זיכרון תיקונים (Learning Engine)...")
+    splash.set_progress(60, "Loading mistake memory bank and handwriting profiles...")
     app.processEvents()
     time.sleep(0.3)
 
     # Step 3: UI
-    splash.set_progress(90, "טוען ממשק משתמש ועורך עברי...")
+    splash.set_progress(90, "Loading Hebrew proofreading studio and interface...")
     app.processEvents()
 
     # Create main window
     window = MainWindow()
+    window.center_on_screen()
 
-    splash.set_progress(100, "מוכן לפעולה!")
+    splash.set_progress(100, "Ready!")
     app.processEvents()
-    time.sleep(0.4)
+    time.sleep(0.3)
 
     # Transition to main window
     splash.finish(window)
+    window.center_on_screen()
     window.show()
 
     sys.exit(app.exec())
