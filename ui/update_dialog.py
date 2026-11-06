@@ -19,14 +19,18 @@ from PyQt6.QtWidgets import (
     QMessageBox, QApplication
 )
 from PyQt6.QtCore import Qt, QThread, pyqtSignal
-from PyQt6.QtGui import QIcon, QFont, QPixmap
+from PyQt6.QtGui import QIcon, QFont, QPixmap, QGuiApplication, QCursor
 
 from ui.i18n import t, SETTINGS_PATH, get_current_language
 from installer.setup_gui import get_resource_path
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-DEFAULT_ONLINE_URL = "https://raw.githubusercontent.com/aharonhakohen/TorahNotesOCR/main/public/version.json"
-DEFAULT_RELEASE_URL = "https://github.com/aharonhakohen/TorahNotesOCR/releases"
+DEFAULT_ONLINE_URL = "https://raw.githubusercontent.com/aharonhakohen/ohr-haksav/main/public/version.json"
+DEFAULT_RELEASE_URL = "https://github.com/aharonhakohen/ohr-haksav/releases"
+FALLBACK_ONLINE_URLS = [
+    "https://raw.githubusercontent.com/aharonhakohen/ohr-haksav/main/public/version.json",
+    "https://raw.githubusercontent.com/aharonhakohen/ksav-kooker/main/public/version.json",
+]
 
 
 def get_current_app_version() -> str:
@@ -34,9 +38,9 @@ def get_current_app_version() -> str:
     vpath = get_resource_path("version.json")
     try:
         with open(vpath, "r", encoding="utf-8") as f:
-            return json.load(f).get("version", "1.1.2")
+            return json.load(f).get("version", "1.3.0")
     except Exception:
-        return "1.1.2"
+        return "1.3.0"
 
 
 def parse_version_tuple(v_str: str) -> tuple:
@@ -90,12 +94,41 @@ class CheckUpdateWorker(QThread):
                 data["_source_folder"] = folder
 
             else:
-                # Online GitHub raw JSON
-                url = self.source_path.strip() or DEFAULT_ONLINE_URL
-                req = urllib.request.Request(url, headers={"User-Agent": "OhrHaKsav-Updater/1.3"})
-                with urllib.request.urlopen(req, timeout=8) as resp:
-                    raw = resp.read().decode("utf-8")
-                    data = json.loads(raw)
+                # Online GitHub raw JSON with automatic fallback
+                req_url = self.source_path.strip()
+                if not req_url or "TorahNotesOCR" in req_url:
+                    req_url = DEFAULT_ONLINE_URL
+
+                urls_to_try = [req_url]
+                for fb in FALLBACK_ONLINE_URLS:
+                    if fb not in urls_to_try:
+                        urls_to_try.append(fb)
+
+                last_err = None
+                for url in urls_to_try:
+                    try:
+                        req = urllib.request.Request(
+                            url,
+                            headers={
+                                "User-Agent": "OhrHaKsav-Updater/1.3",
+                                "Accept": "application/json, text/plain, */*"
+                            }
+                        )
+                        with urllib.request.urlopen(req, timeout=10) as resp:
+                            raw = resp.read().decode("utf-8")
+                            candidate = json.loads(raw)
+                            if candidate and "version" in candidate:
+                                data = candidate
+                                break
+                    except Exception as err:
+                        last_err = err
+                        continue
+
+                if not data:
+                    if last_err:
+                        raise last_err
+                    self.check_failed.emit(t("update_err_invalid_data"))
+                    return
 
             if not data or "version" not in data:
                 self.check_failed.emit(t("update_err_invalid_data"))
@@ -131,7 +164,24 @@ class UpdateDialog(QDialog):
 
         self._load_settings()
         self._init_ui()
+        self.center_on_screen()
         self._start_check()
+
+    def center_on_screen(self):
+        """Centers the dialog on the active monitor or primary display."""
+        try:
+            screen = QGuiApplication.screenAt(QCursor.pos()) or QGuiApplication.primaryScreen()
+            if screen:
+                geo = screen.availableGeometry()
+                x = geo.x() + (geo.width() - self.width()) // 2
+                y = geo.y() + (geo.height() - self.height()) // 2
+                self.move(x, y)
+        except Exception:
+            pass
+
+    def showEvent(self, event):
+        super().showEvent(event)
+        self.center_on_screen()
 
     def _load_settings(self):
         self.source_type = "online"
@@ -157,6 +207,8 @@ class UpdateDialog(QDialog):
                     self.source_type = cfg.get("update_source_type", self.source_type)
                     self.source_local_path = cfg.get("update_local_path", self.source_local_path)
                     self.source_online_url = cfg.get("update_online_url", self.source_online_url)
+                    if not self.source_online_url or "TorahNotesOCR" in self.source_online_url:
+                        self.source_online_url = DEFAULT_ONLINE_URL
                     self.auto_check_startup = cfg.get("update_auto_check", self.auto_check_startup)
             except Exception:
                 pass
@@ -214,15 +266,21 @@ class UpdateDialog(QDialog):
 
         # Top Header Card
         hdr_frame = QFrame()
+        hdr_frame.setObjectName("hdr_frame")
         hdr_frame.setStyleSheet("""
-            QFrame {
+            QFrame#hdr_frame {
                 background-color: #f1f5f9;
                 border: 1px solid #cbd5e1;
                 border-radius: 8px;
-                padding: 12px;
+            }
+            QFrame#hdr_frame QLabel {
+                border: none;
+                background: transparent;
+                padding: 0px;
             }
         """)
         hdr_layout = QHBoxLayout(hdr_frame)
+        hdr_layout.setContentsMargins(14, 12, 14, 12)
         hdr_layout.setSpacing(14)
 
         logo_path = get_resource_path(os.path.join("assets", "ohr_haksav.png"))
@@ -231,6 +289,7 @@ class UpdateDialog(QDialog):
             pix = QPixmap(logo_path).scaled(42, 42, Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation)
             lbl_ico.setPixmap(pix)
             lbl_ico.setFixedSize(42, 42)
+            lbl_ico.setAlignment(Qt.AlignmentFlag.AlignCenter)
             hdr_layout.addWidget(lbl_ico)
 
         v_box = QVBoxLayout()

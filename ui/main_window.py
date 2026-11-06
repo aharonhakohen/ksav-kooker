@@ -1075,3 +1075,16 @@ class MainWindow(QMainWindow):
             self.setStyleSheet(LIGHT_THEME)
             self.btn_theme.setText("🌙")
             self.btn_theme.setToolTip("Switch to Dark Theme")
+
+    def center_on_screen(self):
+        """Centers the window on the active monitor or primary display."""
+        try:
+            from PyQt6.QtGui import QGuiApplication, QCursor
+            screen = QGuiApplication.screenAt(QCursor.pos()) or QGuiApplication.primaryScreen()
+            if screen:
+                geo = screen.availableGeometry()
+                x = geo.x() + (geo.width() - self.width()) // 2
+                y = geo.y() + (geo.height() - self.height()) // 2
+                self.move(x, y)
+        except Exception:
+            pass

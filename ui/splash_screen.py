@@ -2,16 +2,17 @@
 """
 Ohr HaKsav - Modern Splash Screen
 Displays the 3D logo, version details, and initial engine loading progress.
+Guaranteed to center precisely on the active monitor.
 """
 
 import os
 import sys
 from PyQt6.QtWidgets import (
     QSplashScreen, QWidget, QVBoxLayout, QLabel, 
-    QProgressBar, QGraphicsDropShadowEffect
+    QProgressBar, QGraphicsDropShadowEffect, QApplication
 )
 from PyQt6.QtCore import Qt, QTimer
-from PyQt6.QtGui import QPixmap, QColor, QFont
+from PyQt6.QtGui import QPixmap, QColor, QFont, QGuiApplication, QCursor
 
 class ModernSplashScreen(QSplashScreen):
     def __init__(self):
@@ -23,6 +24,20 @@ class ModernSplashScreen(QSplashScreen):
         )
         self.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground, True)
         self._init_ui()
+        self.center_on_screen()
+
+    def center_on_screen(self):
+        """Centers the splash screen precisely on the active monitor or mouse cursor screen."""
+        screen = QGuiApplication.screenAt(QCursor.pos()) or QGuiApplication.primaryScreen()
+        if screen:
+            geo = screen.availableGeometry()
+            x = geo.x() + (geo.width() - self.width()) // 2
+            y = geo.y() + (geo.height() - self.height()) // 2
+            self.move(x, y)
+
+    def showEvent(self, event):
+        super().showEvent(event)
+        self.center_on_screen()
 
     def _init_ui(self):
         container = QWidget(self)
@@ -74,13 +89,13 @@ class ModernSplashScreen(QSplashScreen):
         layout.addWidget(lbl_title)
 
         # Subtitle
-        lbl_sub = QLabel("Offline Torah Notes & Handwriting OCR Studio")
+        lbl_sub = QLabel("Offline Torah Notes & Hebrew Handwriting OCR Studio")
         lbl_sub.setStyleSheet("font-size: 12px; color: #a6adc8; border: none; background: transparent;")
         lbl_sub.setAlignment(Qt.AlignmentFlag.AlignCenter)
         layout.addWidget(lbl_sub)
 
         # Version badge
-        lbl_ver = QLabel("גרסה 1.3.0  (100% Offline Edition)")
+        lbl_ver = QLabel("Version 1.3.0  •  100% Offline Edition")
         lbl_ver.setStyleSheet("font-size: 11px; font-weight: 600; color: #a6e3a1; border: none; background: transparent;")
         lbl_ver.setAlignment(Qt.AlignmentFlag.AlignCenter)
         layout.addWidget(lbl_ver)
@@ -107,7 +122,7 @@ class ModernSplashScreen(QSplashScreen):
         layout.addWidget(self.progress_bar)
 
         # Status text
-        self.lbl_status = QLabel("מאתחל מנוע זיהוי כתב יד אופליין...")
+        self.lbl_status = QLabel("Initializing offline Hebrew handwriting OCR engine...")
         self.lbl_status.setStyleSheet("font-size: 11px; color: #9399b2; border: none; background: transparent;")
         self.lbl_status.setAlignment(Qt.AlignmentFlag.AlignCenter)
         layout.addWidget(self.lbl_status)
