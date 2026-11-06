@@ -3,18 +3,18 @@
   "appNameHebrew": "כתב קוקער",
   "tagline": "Offline Torah Notes & Handwriting OCR Studio",
   "taglineYiddish": "דער קלוגער כתב-קוקער פאר שיעורים און חידושי תורה",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "releaseDate": "2026-11-05",
-  "releaseTitle": "v1.2.0 — In-App Update Checker (GitHub Cloud & Local Network Share) with Clean Upgrade Process",
-  "description": "Ksav Kooker (כתב קוקער) v1.2.0 adds a full-featured 'Check for Updates' tool in the Help menu (Ctrl+U) with dual update channels (GitHub Cloud and Local Network Share/Server folder), alongside a clean upgrade installer engine that prevents file-locking conflicts and purges obsolete binaries while fully preserving all user handwriting data.",
+  "releaseTitle": "v1.2.1 — Light Mode Default UX, Domain Roaming Desktop/Start Menu Shortcuts, and Reliable Process Launching",
+  "description": "Ksav Kooker (כתב קוקער) v1.2.1 sets Light Mode as the default interface theme, resolves Windows Server domain folder redirection (placing shortcuts on redirected server desktops and Start menus), adds an explicit launch control on the Finish page, and launches via a detached process with proper working directory.",
   "features": [
-    "In-App Update Checker (Help > Check for Updates... or Ctrl+U): Easily check if a newer version is available without leaving the application.",
-    "Dual Update Channels (Configurable): Choose between Official GitHub Cloud (online) or a Local Network Share / UNC Domain Folder / USB Drive (e.g. \\\\newltcserver\\Installs\\KsavKooker or M:\\...) for offline institutional environments.",
-    "One-Click Offline Upgrades: When pointed to a network folder containing KsavKooker_Setup.exe, updates can be launched directly with a single click.",
-    "Automatic Running Process Detection: The setup wizard detects if Ksav Kooker is running and gracefully closes it before file extraction, preventing Windows permission errors.",
-    "Clean Binary Purge on Upgrade: Upgrading cleans out old application binaries and obsolete cached modules in the installation directory to prevent file bloat and conflicts.",
-    "100% User Data Isolation: All personal handwriting profiles, learned mistake rules, backups, and settings in %APPDATA% remain completely untouched during upgrades.",
-    "High-Contrast Windows Setup Wizard: Crisp, readable slate typography and verified 3D logo emblem rendering.",
-    "Native Windows Menu Bar & Stacked Workflow: Standard File, Scan & OCR, Learning, View, Language, and Help menus with streamlined action dropdowns."
+    "Light Mode Default: The application interface now opens in clean, crisp, high-contrast Light Mode by default, with one-click toggle to Dark Mode and persistent preference saving.",
+    "Domain Folder Redirection Support: Desktop and Start Menu shortcut creation now queries Windows Shell APIs to detect redirected server folders (e.g. \\\\newltcserver\\userdata$\\<user>\\Desktop) and OneDrive paths.",
+    "Zero-Dependency Shortcut Engine: Uses native Windows Script Host (VBScript/cscript) rather than PowerShell, bypassing Group Policy and AppLocker restrictions on domain workstations.",
+    "Multi-Location Shortcut Placement: Shortcuts are installed in both redirected network desktop folders and local profile folders so the icon is always visible.",
+    "Reliable Post-Install App Launch: The installer now launches Ksav Kooker in a detached process with its native working directory, ensuring smooth launch upon clicking Finish.",
+    "Finish Page Launch Control: Added an explicit 'Launch Ksav Kooker now' checkbox right on the final installation wizard page.",
+    "In-App Update Checker (Help > Check for Updates... or Ctrl+U): Easily check for updates online or from local network shares.",
+    "100% User Data Isolation: All handwriting profiles, learned mistake rules, backups, and settings in %APPDATA% remain untouched during upgrades."
   ]
 }
