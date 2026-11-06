@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Ksav Kooker - About Dialog
+Ohr HaKsav - About Dialog
 Displays app information, 3D logo, version details, and user guide.
 """
 
@@ -17,7 +17,7 @@ import json
 class AboutDialog(QDialog):
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.setWindowTitle("אודות כתב קוקער | About Ksav Kooker")
+        self.setWindowTitle("אודות אור הכתב | About Ohr HaKsav")
         self.resize(580, 560)
         self._init_ui()
 
@@ -29,7 +29,7 @@ class AboutDialog(QDialog):
         # Top Header with 3D Logo
         hdr_layout = QHBoxLayout()
         base_dir = getattr(sys, '_MEIPASS', os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-        logo_path = os.path.join(base_dir, "assets", "ksav_kooker.png")
+        logo_path = os.path.join(base_dir, "assets", "ohr_haksav.png")
 
         if os.path.exists(logo_path):
             lbl_img = QLabel()
@@ -41,12 +41,12 @@ class AboutDialog(QDialog):
         # Title Info
         title_box = QVBoxLayout()
         title_box.setSpacing(4)
-        lbl_title = QLabel("Ksav Kooker  •  כתב קוקער")
+        lbl_title = QLabel("Ohr HaKsav  •  אור הכתב")
         lbl_title.setStyleSheet("font-size: 22px; font-weight: bold; color: #89b4fa;")
         title_box.addWidget(lbl_title)
 
         # Load version info
-        ver_str = "1.2.1"
+        ver_str = "1.3.0"
         try:
             ver_path = os.path.join(base_dir, "version.json")
             if os.path.exists(ver_path):
@@ -73,8 +73,8 @@ class AboutDialog(QDialog):
         browser.setOpenExternalLinks(True)
         browser.setHtml("""
         <div style="font-family: sans-serif; line-height: 1.5; color: #cdd6f4;">
-            <p><b>What is Ksav Kooker?</b><br>
-            <b>Ksav Kooker</b> (כתב קוקער — Yiddish for <i>'Handwriting / Script Scanner & Viewer'</i>) is a fully offline, standalone desktop application built specifically for yeshiva students, rebbeim, and talmidei chachamim to digitize handwritten shiur notes and Torah chiddushim.</p>
+            <p><b>What is Ohr HaKsav?</b><br>
+            <b>Ohr HaKsav</b> (אור הכתב — Yiddish for <i>'Handwriting / Script Scanner & Viewer'</i>) is a fully offline, standalone desktop application built specifically for yeshiva students, rebbeim, and talmidei chachamim to digitize handwritten shiur notes and Torah chiddushim.</p>
             
             <p><b>Key Capabilities:</b></p>
             <ul>

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Ksav Kooker - Modern Windows Installation Wizard GUI
+Ohr HaKsav - Modern Windows Installation Wizard GUI
 Features the 3D logo banner, high-contrast typography, folder selection,
 shortcut creation, and automatic launch.
 """
@@ -251,25 +251,25 @@ class InstallWorker(QThread):
             os.makedirs(self.target_dir, exist_ok=True)
             self.progress.emit(3, "Checking running processes...")
 
-            # 1. Gracefully close any running KsavKooker.exe to prevent file-locking conflicts
+            # 1. Gracefully close any running OhrHaKsav.exe to prevent file-locking conflicts
             try:
-                chk = subprocess.run(["tasklist", "/fi", "imagename eq KsavKooker.exe"], capture_output=True, text=True)
-                if "KsavKooker.exe" in chk.stdout:
-                    self.progress.emit(4, "Closing active Ksav Kooker instance for upgrade...")
-                    subprocess.run(["taskkill", "/f", "/im", "KsavKooker.exe"], capture_output=True)
+                chk = subprocess.run(["tasklist", "/fi", "imagename eq OhrHaKsav.exe"], capture_output=True, text=True)
+                if "OhrHaKsav.exe" in chk.stdout:
+                    self.progress.emit(4, "Closing active Ohr HaKsav instance for upgrade...")
+                    subprocess.run(["taskkill", "/f", "/im", "OhrHaKsav.exe"], capture_output=True)
                     time.sleep(1)
             except Exception:
                 pass
 
             # 2. When upgrading an existing installation, cleanly remove old application binaries
-            # Note: User data (%APPDATA%\KsavKooker) is completely isolated and never touched!
+            # Note: User data (%APPDATA%\OhrHaKsav) is completely isolated and never touched!
             if os.path.exists(self.target_dir):
                 self.progress.emit(6, "Refreshing application directory...")
                 for item in ["_internal", "model_assets", "assets"]:
                     p = os.path.join(self.target_dir, item)
                     if os.path.exists(p):
                         shutil.rmtree(p, ignore_errors=True)
-                old_exe = os.path.join(self.target_dir, "KsavKooker.exe")
+                old_exe = os.path.join(self.target_dir, "OhrHaKsav.exe")
                 if os.path.exists(old_exe):
                     try:
                         os.remove(old_exe)
@@ -316,8 +316,8 @@ class InstallWorker(QThread):
                     self.progress.emit(pct, f"Copying: {os.path.basename(rel_f)}")
 
             self.progress.emit(90, "Creating shortcuts...")
-            exe_path = os.path.join(self.target_dir, "KsavKooker.exe")
-            ico_path = os.path.join(self.target_dir, "assets", "ksav_kooker.ico")
+            exe_path = os.path.join(self.target_dir, "OhrHaKsav.exe")
+            ico_path = os.path.join(self.target_dir, "assets", "ohr_haksav.ico")
             if not os.path.exists(ico_path):
                 ico_path = exe_path
 
@@ -325,24 +325,24 @@ class InstallWorker(QThread):
             # (including redirected network shares and local profiles)
             if self.create_desktop:
                 for d_dir in get_windows_desktop_dirs():
-                    lnk = os.path.join(d_dir, "Ksav Kooker.lnk")
+                    lnk = os.path.join(d_dir, "Ohr HaKsav.lnk")
                     create_windows_shortcut(
                         lnk,
                         exe_path,
                         ico_path,
-                        "Ksav Kooker - Offline Torah Notes OCR Studio"
+                        "Ohr HaKsav - Offline Torah Notes OCR Studio"
                     )
 
             if self.create_startmenu:
                 for sm_dir in get_windows_start_menu_dirs():
-                    app_sm = os.path.join(sm_dir, "Ksav Kooker")
+                    app_sm = os.path.join(sm_dir, "Ohr HaKsav")
                     os.makedirs(app_sm, exist_ok=True)
-                    lnk = os.path.join(app_sm, "Ksav Kooker.lnk")
+                    lnk = os.path.join(app_sm, "Ohr HaKsav.lnk")
                     create_windows_shortcut(
                         lnk,
                         exe_path,
                         ico_path,
-                        "Ksav Kooker - Offline Torah Notes OCR Studio"
+                        "Ohr HaKsav - Offline Torah Notes OCR Studio"
                     )
 
             # Register in Windows Add/Remove Programs (HKCU Uninstall)
@@ -380,17 +380,17 @@ class InstallWorker(QThread):
         import winreg
         try:
             uninstaller_bat = os.path.join(target_dir, "uninstall.bat")
-            desktop_lnk = os.path.join(os.path.expanduser("~"), "Desktop", "Ksav Kooker.lnk")
+            desktop_lnk = os.path.join(os.path.expanduser("~"), "Desktop", "Ohr HaKsav.lnk")
             start_menu_dir = os.path.join(
                 os.environ.get("APPDATA", ""), 
-                r"Microsoft\Windows\Start Menu\Programs\Ksav Kooker"
+                r"Microsoft\Windows\Start Menu\Programs\Ohr HaKsav"
             )
             
             # Generate clean uninstaller batch script
             bat_content = f"""@echo off
-title Uninstalling Ksav Kooker...
+title Uninstalling Ohr HaKsav...
 echo ===================================================
-echo Uninstalling Ksav Kooker (כתב קוקער)...
+echo Uninstalling Ohr HaKsav (אור הכתב)...
 echo ===================================================
 
 echo [1/3] Removing desktop and start menu shortcuts...
@@ -398,6 +398,7 @@ if exist "{desktop_lnk}" del /f /q "{desktop_lnk}"
 if exist "{start_menu_dir}" rmdir /s /q "{start_menu_dir}"
 
 echo [2/3] Removing Windows registry entry...
+reg delete "HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\OhrHaKsav" /f >nul 2>&1
 reg delete "HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\KsavKooker" /f >nul 2>&1
 
 echo [3/3] Removing application files...
@@ -405,7 +406,7 @@ cd /d "%TEMP%"
 start /b "" cmd /c timeout /t 2 /nobreak ^>nul ^& rmdir /s /q "{target_dir}"
 
 echo.
-echo Ksav Kooker has been removed from your computer.
+echo Ohr HaKsav has been removed from your computer.
 echo.
 timeout /t 3
 """
@@ -413,9 +414,9 @@ timeout /t 3
                 f.write(bat_content)
 
             # Write Windows Registry entry under HKCU
-            key_path = r"Software\Microsoft\Windows\CurrentVersion\Uninstall\KsavKooker"
+            key_path = r"Software\Microsoft\Windows\CurrentVersion\Uninstall\OhrHaKsav"
             with winreg.CreateKey(winreg.HKEY_CURRENT_USER, key_path) as key:
-                winreg.SetValueEx(key, "DisplayName", 0, winreg.REG_SZ, "Ksav Kooker (כתב קוקער)")
+                winreg.SetValueEx(key, "DisplayName", 0, winreg.REG_SZ, "Ohr HaKsav (אור הכתב)")
                 winreg.SetValueEx(key, "DisplayVersion", 0, winreg.REG_SZ, self.version)
                 winreg.SetValueEx(key, "Publisher", 0, winreg.REG_SZ, "Torah u'Mesorah Lakewood Teachers Center")
                 winreg.SetValueEx(key, "DisplayIcon", 0, winreg.REG_SZ, ico_path)
@@ -423,7 +424,7 @@ timeout /t 3
                 winreg.SetValueEx(key, "UninstallString", 0, winreg.REG_SZ, f'"{uninstaller_bat}"')
                 winreg.SetValueEx(key, "QuietUninstallString", 0, winreg.REG_SZ, f'cmd /c "{uninstaller_bat}"')
                 winreg.SetValueEx(key, "EstimatedSize", 0, winreg.REG_DWORD, 1180000)
-                winreg.SetValueEx(key, "URLInfoAbout", 0, winreg.REG_SZ, "https://github.com/aharonhakohen/ksav-kooker")
+                winreg.SetValueEx(key, "URLInfoAbout", 0, winreg.REG_SZ, "https://github.com/aharonhakohen/TorahNotesOCR")
                 winreg.SetValueEx(key, "NoModify", 0, winreg.REG_DWORD, 1)
                 winreg.SetValueEx(key, "NoRepair", 0, winreg.REG_DWORD, 1)
         except Exception as err:
@@ -435,7 +436,7 @@ class ModernSetupWizard(QWizard):
         self.source_app_dir = source_app_dir
         self.installed_exe_path = ""
         self.version = get_app_version()
-        self.setWindowTitle(f"Ksav Kooker Setup — Installation Wizard (v{self.version})")
+        self.setWindowTitle(f"Ohr HaKsav Setup — Installation Wizard (v{self.version})")
         self.resize(720, 520)
         self.setWizardStyle(QWizard.WizardStyle.ModernStyle)
         self.setLayoutDirection(Qt.LayoutDirection.LeftToRight)
@@ -445,7 +446,7 @@ class ModernSetupWizard(QWizard):
         self.setButtonText(QWizard.WizardButton.CancelButton, "Cancel")
 
         # Set Window Icon
-        icon_path = get_resource_path(os.path.join("assets", "ksav_kooker.ico"))
+        icon_path = get_resource_path(os.path.join("assets", "ohr_haksav.ico"))
         if os.path.exists(icon_path):
             self.setWindowIcon(QIcon(icon_path))
 
@@ -592,7 +593,7 @@ class ModernSetupWizard(QWizard):
         layout.setSpacing(20)
 
         # Left 3D Banner
-        logo_path = get_resource_path(os.path.join("assets", "ksav_kooker.png"))
+        logo_path = get_resource_path(os.path.join("assets", "ohr_haksav.png"))
         if os.path.exists(logo_path):
             lbl_banner = QLabel()
             pix = QPixmap(logo_path).scaled(220, 220, Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation)
@@ -605,7 +606,7 @@ class ModernSetupWizard(QWizard):
         right_box = QVBoxLayout()
         right_box.setSpacing(10)
 
-        lbl_hdr = QLabel("Welcome to Ksav Kooker Setup")
+        lbl_hdr = QLabel("Welcome to Ohr HaKsav Setup")
         lbl_hdr.setStyleSheet("font-size: 20px; font-weight: bold; color: #0f172a;")
         right_box.addWidget(lbl_hdr)
 
@@ -614,8 +615,8 @@ class ModernSetupWizard(QWizard):
         right_box.addWidget(lbl_ver)
 
         lbl_desc = QLabel(
-            "This wizard will install <b>Ksav Kooker (כתב קוקער)</b> on your computer.<br><br>"
-            "Ksav Kooker operates <b>100% offline with zero internet connection required</b>, providing:<br>"
+            "This wizard will install <b>Ohr HaKsav (אור הכתב)</b> on your computer.<br><br>"
+            "Ohr HaKsav operates <b>100% offline with zero internet connection required</b>, providing:<br>"
             "• Offline neural OCR recognition for handwritten Hebrew cursive and print<br>"
             "• Side-by-side editing and proofreading directly alongside notebook photos<br>"
             "• Multi-user handwriting profiles and multi-profile rule stacking<br>"
@@ -634,14 +635,14 @@ class ModernSetupWizard(QWizard):
     def _create_destination_page(self) -> QWizardPage:
         page = QWizardPage()
         page.setTitle("Destination Location")
-        page.setSubTitle("Select the destination folder where Setup will install Ksav Kooker:")
+        page.setSubTitle("Select the destination folder where Setup will install Ohr HaKsav:")
 
         layout = QVBoxLayout(page)
         layout.setSpacing(14)
         layout.setContentsMargins(24, 20, 24, 20)
 
         # Default path in LocalAppData
-        default_dir = os.path.join(os.environ.get("LOCALAPPDATA", os.path.expanduser("~")), "Programs", "Ksav Kooker")
+        default_dir = os.path.join(os.environ.get("LOCALAPPDATA", os.path.expanduser("~")), "Programs", "Ohr HaKsav")
 
         lbl_prompt = QLabel("Destination Folder:")
         lbl_prompt.setStyleSheet("font-weight: 600; color: #0f172a; font-size: 13px;")
@@ -661,7 +662,7 @@ class ModernSetupWizard(QWizard):
         lbl_space.setStyleSheet("color: #64748b; font-size: 12px;")
         layout.addWidget(lbl_space)
 
-        existing_exe = os.path.join(default_dir, "KsavKooker.exe")
+        existing_exe = os.path.join(default_dir, "OhrHaKsav.exe")
         if os.path.exists(existing_exe):
             lbl_upgrade = QLabel(
                 "<b>Upgrade Mode Detected:</b> Setup will refresh all application binaries while fully preserving your personal handwriting profiles, mistake memory bank, and custom settings in %APPDATA%."
@@ -683,7 +684,7 @@ class ModernSetupWizard(QWizard):
     def _browse_destination(self):
         chosen = QFileDialog.getExistingDirectory(self, "Select Installation Folder", self.txt_dest.text())
         if chosen:
-            self.txt_dest.setText(os.path.join(chosen, "Ksav Kooker"))
+            self.txt_dest.setText(os.path.join(chosen, "Ohr HaKsav"))
 
     def _create_options_page(self) -> QWizardPage:
         page = QWizardPage()
@@ -702,7 +703,7 @@ class ModernSetupWizard(QWizard):
         self.chk_startmenu.setChecked(True)
         layout.addWidget(self.chk_startmenu)
 
-        self.chk_launch = QCheckBox("Launch Ksav Kooker when Setup exits")
+        self.chk_launch = QCheckBox("Launch Ohr HaKsav when Setup exits")
         self.chk_launch.setChecked(True)
         layout.addWidget(self.chk_launch)
 
@@ -711,8 +712,8 @@ class ModernSetupWizard(QWizard):
 
     def _create_installing_page(self) -> QWizardPage:
         self.page_installing = QWizardPage()
-        self.page_installing.setTitle("Installing Ksav Kooker...")
-        self.page_installing.setSubTitle("Please wait while Setup installs Ksav Kooker on your computer:")
+        self.page_installing.setTitle("Installing Ohr HaKsav...")
+        self.page_installing.setSubTitle("Please wait while Setup installs Ohr HaKsav on your computer:")
 
         layout = QVBoxLayout(self.page_installing)
         layout.setSpacing(16)
@@ -740,7 +741,7 @@ class ModernSetupWizard(QWizard):
         layout.setSpacing(20)
 
         # 3D Logo on finish
-        logo_path = get_resource_path(os.path.join("assets", "ksav_kooker.png"))
+        logo_path = get_resource_path(os.path.join("assets", "ohr_haksav.png"))
         if os.path.exists(logo_path):
             lbl_banner = QLabel()
             pix = QPixmap(logo_path).scaled(220, 220, Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation)
@@ -757,7 +758,7 @@ class ModernSetupWizard(QWizard):
         right_box.addWidget(lbl_hdr)
 
         lbl_msg = QLabel(
-            "<b>Ksav Kooker (כתב קוקער)</b> has been successfully installed on your computer.<br><br>"
+            "<b>Ohr HaKsav (אור הכתב)</b> has been successfully installed on your computer.<br><br>"
             "Desktop and Start Menu shortcuts have been created.<br>"
             "The software is ready for 100% offline use with zero internet connection.<br><br>"
             "Click <b>Finish</b> to exit Setup."
@@ -767,7 +768,7 @@ class ModernSetupWizard(QWizard):
         right_box.addWidget(lbl_msg)
 
         # Launch checkbox directly on the Finish page
-        self.chk_finish_launch = QCheckBox("Launch Ksav Kooker now")
+        self.chk_finish_launch = QCheckBox("Launch Ohr HaKsav now")
         self.chk_finish_launch.setChecked(True)
         self.chk_finish_launch.setStyleSheet("font-weight: 600; color: #0f172a; font-size: 13px; margin-top: 10px;")
         right_box.addWidget(self.chk_finish_launch)
@@ -851,10 +852,10 @@ def main():
     app = QApplication(sys.argv)
     
     # Locate compiled app folder
-    # Priority: dist/KsavKooker, or dist/IbberKuck, or bundled
-    dist_dir = os.path.join(APP_ROOT, "dist", "KsavKooker")
+    # Priority: dist/OhrHaKsav, or bundled
+    dist_dir = os.path.join(APP_ROOT, "dist", "OhrHaKsav")
     if not os.path.exists(dist_dir):
-        dist_dir = os.path.join(APP_ROOT, "dist", "IbberKuck")
+        dist_dir = os.path.join(APP_ROOT, "dist", "OhrHaKsav")
 
     wizard = ModernSetupWizard(dist_dir)
     wizard.show()

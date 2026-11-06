@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Ksav Kooker - Modern Splash Screen
+Ohr HaKsav - Modern Splash Screen
 Displays the 3D logo, version details, and initial engine loading progress.
 """
 
@@ -51,9 +51,9 @@ class ModernSplashScreen(QSplashScreen):
 
         # 3D Logo Image
         base_dir = getattr(sys, '_MEIPASS', os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-        logo_path = os.path.join(base_dir, "assets", "ksav_kooker.png")
+        logo_path = os.path.join(base_dir, "assets", "ohr_haksav.png")
         if not os.path.exists(logo_path):
-            logo_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "assets", "ksav_kooker.png")
+            logo_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "assets", "ohr_haksav.png")
 
         self.lbl_logo = QLabel()
         if os.path.exists(logo_path):
@@ -68,7 +68,7 @@ class ModernSplashScreen(QSplashScreen):
         layout.addWidget(self.lbl_logo)
 
         # Title
-        lbl_title = QLabel("Ksav Kooker  •  כתב קוקער")
+        lbl_title = QLabel("Ohr HaKsav  •  אור הכתב")
         lbl_title.setStyleSheet("font-size: 22px; font-weight: bold; color: #89b4fa; border: none; background: transparent;")
         lbl_title.setAlignment(Qt.AlignmentFlag.AlignCenter)
         layout.addWidget(lbl_title)
@@ -80,7 +80,7 @@ class ModernSplashScreen(QSplashScreen):
         layout.addWidget(lbl_sub)
 
         # Version badge
-        lbl_ver = QLabel("גרסה 1.0.0  (Offline Edition)")
+        lbl_ver = QLabel("גרסה 1.3.0  (100% Offline Edition)")
         lbl_ver.setStyleSheet("font-size: 11px; font-weight: 600; color: #a6e3a1; border: none; background: transparent;")
         lbl_ver.setAlignment(Qt.AlignmentFlag.AlignCenter)
         layout.addWidget(lbl_ver)

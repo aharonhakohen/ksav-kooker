@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Ksav Kooker (כתב קוקער) - Offline Torah Notes & Handwriting OCR Studio
+Ohr HaKsav (אור הכתב) - Offline Torah Notes & Handwriting OCR Studio
 Main Application Entry Point with 3D Splash Screen and Taskbar Icon.
 """
 
@@ -17,7 +17,7 @@ if BASE_DIR not in sys.path:
 if sys.platform == "win32":
     try:
         import ctypes
-        myappid = 'TU.LTC.KsavKooker.OCR.v1'
+        myappid = 'TU.LTC.OhrHaKsav.OCR.v1'
         ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
     except Exception:
         pass
@@ -37,12 +37,12 @@ def main():
         QApplication.setAttribute(Qt.ApplicationAttribute.AA_UseHighDpiPixmaps, True)
 
     app = QApplication(sys.argv)
-    app.setApplicationName("KsavKooker")
-    app.setApplicationDisplayName("כתב קוקער - Ksav Kooker")
+    app.setApplicationName("OhrHaKsav")
+    app.setApplicationDisplayName("אור הכתב - Ohr HaKsav")
 
     # Set icon
     base_dir = getattr(sys, '_MEIPASS', BASE_DIR)
-    icon_path = os.path.join(base_dir, "assets", "ksav_kooker.png")
+    icon_path = os.path.join(base_dir, "assets", "ohr_haksav.png")
     if os.path.exists(icon_path):
         app.setWindowIcon(QIcon(icon_path))
 

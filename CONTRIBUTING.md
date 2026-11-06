@@ -1,6 +1,6 @@
-# Contributing to Ksav Kooker (כתב קוקער)
+# Contributing to Ohr HaKsav (אור הכתב)
 
-Thank you for your interest in contributing to **Ksav Kooker**! We welcome contributions to improve handwriting OCR accuracy, enhance the user interface, optimize memory storage, or expand language modeling for Torah and Yeshiva manuscripts.
+Thank you for your interest in contributing to **Ohr HaKsav**! We welcome contributions to improve handwriting OCR accuracy, enhance the user interface, optimize memory storage, or expand language modeling for Torah and Yeshiva manuscripts.
 
 ---
 
@@ -8,8 +8,8 @@ Thank you for your interest in contributing to **Ksav Kooker**! We welcome contr
 
 1. **Clone the repository:**
    ```bash
-   git clone https://github.com/aharonhakohen/ksav-kooker.git
-   cd ksav-kooker
+   git clone https://github.com/aharonhakohen/TorahNotesOCR.git
+   cd TorahNotesOCR
    ```
 
 2. **Create and activate a virtual environment:**
@@ -27,7 +27,7 @@ Thank you for your interest in contributing to **Ksav Kooker**! We welcome contr
    ```
 
 4. **Verify model weights:**
-   Ensure `model_assets/mishkefet-v1.pt`, `model_assets/charset.json`, and `model_assets/hebrew_words.pkl` are present. If `mishkefet-v1.pt` was not pulled via Git LFS, download it from the latest GitHub Release and place it inside `model_assets/`.
+   Ensure `model_assets/mishkefet-v1.pt`, `model_assets/charset.json`, and `model_assets/hebrew_words.pkl` are present. If `mishkefet-v1.pt` was not pulled via Git LFS, run `python scripts/download_model.py`.
 
 5. **Run the application:**
    ```bash
@@ -58,10 +58,10 @@ To build the standalone Windows `.exe` and setup installer:
 python build_exe.py
 ```
 This will compile:
-1. `dist/KsavKooker/KsavKooker.exe` (Portable distribution folder)
-2. `dist/KsavKooker_Setup.exe` (Self-contained Windows Setup Wizard)
+1. `dist/OhrHaKsav/OhrHaKsav.exe` (Portable distribution folder)
+2. `dist/OhrHaKsav_Setup.exe` (Self-contained Windows Setup Wizard)
 
 ---
 
 ## ⚖️ License
-By contributing to Ksav Kooker, you agree that your contributions will be licensed under its [MIT License](LICENSE).
+By contributing to Ohr HaKsav, you agree that your contributions will be licensed under its [MIT License](LICENSE).

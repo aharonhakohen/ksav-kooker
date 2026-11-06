@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Ksav Kooker - Automated Build Script for Standalone Executable & Offline Setup Wizard
+Ohr HaKsav - Automated Build Script for Standalone Executable & Offline Setup Wizard
 Bundles Python, PyQt6, PyTorch CPU, Mishkefet-v1 model assets, 3D icons, and offline zip payload.
 Optimized to exclude unused build dependencies (transformers, scipy, matplotlib, pandas, etc.)
 """
@@ -38,18 +38,18 @@ def create_payload_zip(src_dir: str, out_zip: str):
 def build(force_rebuild: bool = False):
     version = get_version()
     print("=" * 70)
-    print(f"Building Ksav Kooker v{version} Standalone Offline Package")
+    print(f"Building Ohr HaKsav v{version} Standalone Offline Package")
     print("=" * 70)
 
     dist_dir = os.path.join(BASE_DIR, "dist")
     assets_dir = os.path.join(BASE_DIR, "assets")
-    ico_path = os.path.join(assets_dir, "ksav_kooker.ico")
-    app_output = os.path.join(dist_dir, "KsavKooker")
-    app_exe = os.path.join(app_output, "KsavKooker.exe")
+    ico_path = os.path.join(assets_dir, "ohr_haksav.ico")
+    app_output = os.path.join(dist_dir, "OhrHaKsav")
+    app_exe = os.path.join(app_output, "OhrHaKsav.exe")
     payload_zip = os.path.join(dist_dir, "payload.zip")
-    setup_exe = os.path.join(dist_dir, "KsavKooker_Setup.exe")
+    setup_exe = os.path.join(dist_dir, "OhrHaKsav_Setup.exe")
 
-    # Determine if rebuild of KsavKooker.exe is needed
+    # Determine if rebuild of OhrHaKsav.exe is needed
     core_files = [
         os.path.join(BASE_DIR, "version.json"),
         os.path.join(BASE_DIR, "main.py"),
@@ -72,13 +72,13 @@ def build(force_rebuild: bool = False):
                 break
 
     if needs_app_rebuild:
-        print(f"\n[1/3] Compiling KsavKooker.exe (v{version}) directory with optimizations...")
+        print(f"\n[1/3] Compiling OhrHaKsav.exe (v{version}) directory with optimizations...")
         if os.path.exists(app_output):
             shutil.rmtree(app_output, ignore_errors=True)
         cmd = [
             sys.executable, "-m", "PyInstaller",
             "--noconfirm",
-            "--name=KsavKooker",
+            "--name=OhrHaKsav",
             "--noconsole",
             "--onedir",
             "--clean",
@@ -107,7 +107,7 @@ def build(force_rebuild: bool = False):
         ]
         subprocess.check_call(cmd, cwd=BASE_DIR)
     else:
-        print(f"\n[1/3] Existing KsavKooker application up-to-date at: {app_output}")
+        print(f"\n[1/3] Existing OhrHaKsav application up-to-date at: {app_output}")
 
     # 2. Package offline payload.zip
     if not os.path.exists(payload_zip) or os.path.getmtime(payload_zip) < os.path.getmtime(app_exe):
@@ -115,12 +115,13 @@ def build(force_rebuild: bool = False):
     else:
         print(f"\n[2/3] Existing payload.zip up-to-date ({os.path.getsize(payload_zip)/(1024*1024):.1f} MB)")
 
-    # 3. Build Standalone Offline Setup Wizard (KsavKooker_Setup.exe) embedding payload.zip
-    print("\n[3/3] Compiling KsavKooker_Setup.exe Self-Extracting Installer Wizard...")
+    # 3. Build Standalone Offline Setup Wizard (OhrHaKsav_Setup.exe) embedding payload.zip
+    print("\n[3/3] Compiling OhrHaKsav_Setup.exe Self-Extracting Installer Wizard...")
     installer_cmd = [
         sys.executable, "-m", "PyInstaller",
+        "--add-data", f"{os.path.join(BASE_DIR, 'version.json')};.",
         "--noconfirm",
-        "--name=KsavKooker_Setup",
+        "--name=OhrHaKsav_Setup",
         "--noconsole",
         "--onefile",
         "--clean",
@@ -132,7 +133,7 @@ def build(force_rebuild: bool = False):
     subprocess.check_call(installer_cmd, cwd=BASE_DIR)
 
     # 4. Deploy to custom staging directory (configured via local_deploy.txt or KSAV_KOOKER_DEPLOY_DIR)
-    target_drive = os.environ.get("KSAV_KOOKER_DEPLOY_DIR")
+    target_drive = os.environ.get("OHR_HAKSAV_DEPLOY_DIR") or os.environ.get("KSAV_KOOKER_DEPLOY_DIR")
     if not target_drive:
         deploy_cfg = os.path.join(BASE_DIR, "local_deploy.txt")
         if os.path.exists(deploy_cfg):
@@ -149,11 +150,11 @@ def build(force_rebuild: bool = False):
             print(f"\nDeploying artifacts to destination: {target_drive}...")
             
             # 1. Setup wizard
-            shutil.copy2(setup_exe, os.path.join(target_drive, "KsavKooker_Setup.exe"))
-            print(f" -> Deployed KsavKooker_Setup.exe")
+            shutil.copy2(setup_exe, os.path.join(target_drive, "OhrHaKsav_Setup.exe"))
+            print(f" -> Deployed OhrHaKsav_Setup.exe")
 
             # 2. Portable zip
-            portable_zip = os.path.join(target_drive, f"KsavKooker-v{version}-Windows.zip")
+            portable_zip = os.path.join(target_drive, f"OhrHaKsav-v{version}-Windows.zip")
             shutil.copy2(payload_zip, portable_zip)
             print(f" -> Deployed portable zip to {portable_zip}")
 
@@ -162,7 +163,7 @@ def build(force_rebuild: bool = False):
             print(" -> Deployed version.json for offline update checks")
 
             # 3. Unpacked directory
-            drive_app_dir = os.path.join(target_drive, "Ksav Kooker")
+            drive_app_dir = os.path.join(target_drive, "Ohr HaKsav")
             if os.path.exists(drive_app_dir):
                 shutil.rmtree(drive_app_dir, ignore_errors=True)
             shutil.copytree(app_output, drive_app_dir)

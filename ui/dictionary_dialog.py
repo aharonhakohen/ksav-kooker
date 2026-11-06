@@ -539,9 +539,9 @@ class DictionaryManagerDialog(QDialog):
 
     def save_backup_as_action(self):
         pname = self.learning_engine.get_active_profile_name()
-        default_name = f"KsavKooker_{pname}.ksavbackup"
+        default_name = f"OhrHaKsav_{pname}.ohrhaksav"
         path, _ = QFileDialog.getSaveFileName(
-            self, "Save Backup File", default_name, "Ksav Kooker Backup (*.ksavbackup);;SQLite Database (*.db)"
+            self, "Save Backup File", default_name, "Ohr HaKsav Backup (*.ohrhaksav *.ksavbackup);;SQLite Database (*.db)"
         )
         if not path:
             return
@@ -564,7 +564,7 @@ class DictionaryManagerDialog(QDialog):
     def restore_action(self, as_new: bool):
         title = "Select Backup File to Restore as New Profile" if as_new else "Select Backup File to Overwrite Active Profile"
         path, _ = QFileDialog.getOpenFileName(
-            self, title, "", "Backup Files (*.ksavbackup *.db *.json);;All Files (*.*)"
+            self, title, "", "Backup Files (*.ohrhaksav *.ksavbackup *.db *.json);;All Files (*.*)"
         )
         if not path:
             return
@@ -596,7 +596,7 @@ class DictionaryManagerDialog(QDialog):
 
     def merge_from_file_action(self):
         path, _ = QFileDialog.getOpenFileName(
-            self, "Select Rule File to Merge", "", "Rule Files (*.ksavbackup *.db *.json);;All Files (*.*)"
+            self, "Select Rule File to Merge", "", "Rule Files (*.ohrhaksav *.ksavbackup *.db *.json);;All Files (*.*)"
         )
         if not path:
             return
@@ -614,7 +614,7 @@ class DictionaryManagerDialog(QDialog):
 
     def export_json_action(self):
         pname = self.learning_engine.get_active_profile_name()
-        default_file = f"ksav_kooker_rules_{pname}.json"
+        default_file = f"ohr_haksav_rules_{pname}.json"
         path, _ = QFileDialog.getSaveFileName(self, "Export Rules to JSON", default_file, "JSON Files (*.json)")
         if not path:
             return

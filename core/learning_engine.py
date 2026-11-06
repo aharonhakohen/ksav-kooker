@@ -7,7 +7,7 @@ Supports:
 - Multi-Profile Stacking (applying rules from multiple people simultaneously during OCR)
 - Rule Merging (combining another person's learned rules into your active profile)
 - Automatic & On-Demand Backup & Restore (.ksavbackup / .db / .json)
-- Roaming Windows User Profile support (%APPDATA%\KsavKooker)
+- Roaming Windows User Profile support (%APPDATA%\OhrHaKsav)
 """
 
 import os
@@ -104,18 +104,18 @@ class LearningEngine:
         """
         Initializes the Learning Engine.
         If db_path is provided, operates on that specific database file.
-        Otherwise, manages multi-user profiles in app_dir (%APPDATA%\\KsavKooker).
+        Otherwise, manages multi-user profiles in app_dir (%APPDATA%\\OhrHaKsav).
         """
         if app_dir is None:
-            custom_dir = os.environ.get("KSAV_KOOKER_DATA_DIR")
+            custom_dir = os.environ.get("OHR_HAKSAV_DATA_DIR") or os.environ.get("KSAV_KOOKER_DATA_DIR")
             if custom_dir:
                 app_dir = custom_dir
             else:
                 roaming_appdata = os.environ.get("APPDATA")
                 if roaming_appdata:
-                    app_dir = os.path.join(roaming_appdata, "KsavKooker")
+                    app_dir = os.path.join(roaming_appdata, "OhrHaKsav")
                 else:
-                    app_dir = os.path.join(os.path.expanduser("~"), ".ksav_kooker")
+                    app_dir = os.path.join(os.path.expanduser("~"), ".ohr_haksav")
 
         self.app_dir = app_dir
         self.profiles_dir = os.path.join(self.app_dir, "profiles")
@@ -465,7 +465,7 @@ class LearningEngine:
         pname = meta.get("name", profile_id)
         safe_pname = re.sub(r'[^a-zA-Z0-9_\u0590-\u05FF]', '_', pname)
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        backup_filename = f"KsavKooker_Backup_{safe_pname}_{timestamp}.ksavbackup"
+        backup_filename = f"OhrHaKsav_Backup_{safe_pname}_{timestamp}.ohrhaksav"
         target_path = os.path.join(self.backups_dir, backup_filename)
 
         self.backup_profile(profile_id, target_path)

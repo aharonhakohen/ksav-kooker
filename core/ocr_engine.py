@@ -21,7 +21,7 @@ class OCREngine:
     def _resolve_model_dir(self) -> str:
         """Finds model assets in custom dir, frozen bundle, or local folder."""
         # 1. Custom model directory via environment variable (e.g. shared server path for network labs)
-        env_model_dir = os.environ.get("KSAV_KOOKER_MODEL_DIR")
+        env_model_dir = os.environ.get("OHR_HAKSAV_MODEL_DIR") or os.environ.get("KSAV_KOOKER_MODEL_DIR")
         if env_model_dir and os.path.exists(os.path.join(env_model_dir, "mishkefet-v1.pt")):
             return env_model_dir
 

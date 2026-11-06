@@ -95,9 +95,9 @@ class MainWindow(QMainWindow):
         self.setMinimumSize(960, 600)
 
         # Set Window Icon
-        icon_path = get_resource_path(os.path.join("assets", "ksav_kooker.png"))
+        icon_path = get_resource_path(os.path.join("assets", "ohr_haksav.png"))
         if not os.path.exists(icon_path):
-            icon_path = get_resource_path(os.path.join("assets", "ksav_kooker.ico"))
+            icon_path = get_resource_path(os.path.join("assets", "ohr_haksav.ico"))
         if os.path.exists(icon_path):
             self.setWindowIcon(QIcon(icon_path))
 
@@ -259,6 +259,13 @@ class MainWindow(QMainWindow):
         self.act_view_theme.triggered.connect(self.toggle_theme)
         self.m_view.addAction(self.act_view_theme)
 
+        self.act_view_stats = QAction(t("menu_view_stats"), self)
+        self.act_view_stats.setCheckable(True)
+        self.act_view_stats.setChecked(False)
+        self.act_view_stats.setShortcut(QKeySequence("Ctrl+Shift+S"))
+        self.act_view_stats.toggled.connect(self.toggle_stats_bar)
+        self.m_view.addAction(self.act_view_stats)
+
         # Language Menu
         self.m_lang = mb.addMenu(t("menu_language"))
         self.act_lang_en = QAction(t("menu_lang_en"), self)
@@ -296,7 +303,7 @@ class MainWindow(QMainWindow):
         brand_box.setContentsMargins(0, 0, 4, 0)
         brand_box.setSpacing(6)
 
-        logo_path = get_resource_path(os.path.join("assets", "ksav_kooker.png"))
+        logo_path = get_resource_path(os.path.join("assets", "ohr_haksav.png"))
         if os.path.exists(logo_path):
             self.lbl_logo = QLabel()
             pix = QPixmap(logo_path).scaled(26, 26, Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation)
@@ -322,7 +329,7 @@ class MainWindow(QMainWindow):
         self.btn_attach = QPushButton(f"📁 {t('btn_add_pages_short')}")
         self.btn_attach.setObjectName("btn_primary")
         self.btn_attach.setToolTip(t("btn_attach_tooltip"))
-        self.btn_attach.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
+        self.btn_attach.setSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Fixed)
         self.btn_attach.clicked.connect(self.attach_images_dialog)
         bar.addWidget(self.btn_attach)
 
@@ -332,7 +339,7 @@ class MainWindow(QMainWindow):
         self.btn_scan.setObjectName("btn_success")
         self.btn_scan.setToolTip(t("btn_scan_tooltip"))
         self.btn_scan.setPopupMode(QToolButton.ToolButtonPopupMode.MenuButtonPopup)
-        self.btn_scan.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
+        self.btn_scan.setSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Fixed)
         self.btn_scan.clicked.connect(self.scan_current_page)
 
         self.scan_menu = QMenu(self.btn_scan)
@@ -346,7 +353,7 @@ class MainWindow(QMainWindow):
         # 4. Save & Learn Button
         self.btn_learn = QPushButton(f"💾 {t('btn_learn_short')}")
         self.btn_learn.setToolTip(t("btn_learn_tooltip"))
-        self.btn_learn.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
+        self.btn_learn.setSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Fixed)
         self.btn_learn.clicked.connect(self.learn_current_corrections)
         bar.addWidget(self.btn_learn)
 
@@ -355,7 +362,7 @@ class MainWindow(QMainWindow):
         self.btn_export.setText(f"📄 {t('btn_export_menu')}")
         self.btn_export.setToolTip(t("btn_export_tooltip"))
         self.btn_export.setPopupMode(QToolButton.ToolButtonPopupMode.InstantPopup)
-        self.btn_export.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
+        self.btn_export.setSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Fixed)
         
         self.export_menu = QMenu(self.btn_export)
         self.act_exp_dropdown_docx = self.export_menu.addAction(t("btn_export_word_opt"))
@@ -579,6 +586,8 @@ class MainWindow(QMainWindow):
         self.act_view_zo.setText(t("menu_view_zoom_out"))
         self.act_view_fit.setText(t("menu_view_fit"))
         self.act_view_theme.setText(t("menu_view_theme"))
+        if hasattr(self, "act_view_stats"):
+            self.act_view_stats.setText(t("menu_view_stats"))
 
         self.m_lang.setTitle(t("menu_language"))
         self.act_lang_en.setText(t("menu_lang_en"))
@@ -590,15 +599,16 @@ class MainWindow(QMainWindow):
 
         # Action Toolbar
         self.btn_attach.setText(f"📁 {t('btn_add_pages_short')}")
-        self.btn_attach.setToolTip(t("btn_attach_tooltip"))
+        self.btn_attach.setToolTip("""<b>📁 Add Pages (Ctrl+O)</b><br>Step 1: Attach photos or scans of handwritten Torah notes from your computer or phone.""")
 
         self.btn_scan.setText(f"⚡ {t('btn_scan_menu')}")
-        self.btn_scan.setToolTip(t("btn_scan_tooltip"))
+        self.btn_scan.setToolTip("""<b>⚡ Scan Page (F5)</b><br>Step 2: Run offline neural handwriting recognition on the active notebook page.""")
         self.act_scan_dropdown_curr.setText(t("btn_scan_current_opt"))
         self.act_scan_dropdown_all.setText(t("btn_scan_all_opt"))
 
-        self.btn_learn.setText(f"💾 {t('btn_learn_short')}")
-        self.btn_learn.setToolTip(t("btn_learn_tooltip"))
+        self.btn_learn.setText(f"🎓 {t('btn_learn_short')}")
+        self.btn_learn.setMinimumWidth(self.btn_learn.fontMetrics().horizontalAdvance(self.btn_learn.text()) + 32)
+        self.btn_learn.setToolTip("""<b>🎓 Save & Learn Mistakes (Ctrl+L)</b><br>Step 3: Saves your proofreading fixes into the handwriting memory bank so future scans automatically correct these words!""")
 
         self.btn_export.setText(f"📄 {t('btn_export_menu')}")
         self.btn_export.setToolTip(t("btn_export_tooltip"))
@@ -1031,6 +1041,21 @@ class MainWindow(QMainWindow):
                 with open(SETTINGS_PATH, "r", encoding="utf-8") as f:
                     cfg = json.load(f)
             cfg["theme"] = "dark" if self.is_dark_theme else "light"
+            with open(SETTINGS_PATH, "w", encoding="utf-8") as f:
+                json.dump(cfg, f, indent=2, ensure_ascii=False)
+        except Exception:
+            pass
+
+    def toggle_stats_bar(self, checked: bool):
+        if hasattr(self, 'editor'):
+            self.editor.set_stats_visible(checked)
+        try:
+            if os.path.exists(SETTINGS_PATH):
+                with open(SETTINGS_PATH, "r", encoding="utf-8") as f:
+                    cfg = json.load(f)
+            else:
+                cfg = {}
+            cfg["show_editor_stats"] = checked
             with open(SETTINGS_PATH, "w", encoding="utf-8") as f:
                 json.dump(cfg, f, indent=2, ensure_ascii=False)
         except Exception:
