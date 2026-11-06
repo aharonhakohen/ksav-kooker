@@ -63,6 +63,176 @@ def get_app_version() -> str:
     except Exception:
         return "1.1.2"
 
+
+def get_windows_desktop_dirs() -> list:
+    r"""
+    Get all active desktop directory paths for the current user.
+    Robust against Windows Server domain environments, Roaming Profiles,
+    Folder Redirection (e.g. \\newltcserver\userdata$\<user>\Desktop), and OneDrive.
+    """
+    candidates = []
+    
+    # 1. Windows Shell API (CSIDL_DESKTOPDIRECTORY = 0x0010)
+    try:
+        import ctypes
+        buf = ctypes.create_unicode_buffer(260)
+        if ctypes.windll.shell32.SHGetFolderPathW(None, 0x0010, None, 0, buf) == 0:
+            val = buf.value.strip()
+            if val and os.path.exists(val):
+                candidates.append(val)
+    except Exception:
+        pass
+
+    # 2. Windows Registry: User Shell Folders
+    try:
+        import winreg
+        with winreg.OpenKey(winreg.HKEY_CURRENT_USER, r"Software\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders") as k:
+            val, _ = winreg.QueryValueEx(k, "Desktop")
+            expanded = os.path.expandvars(val).strip()
+            if expanded and os.path.exists(expanded):
+                candidates.append(expanded)
+    except Exception:
+        pass
+
+    # 3. OneDrive Desktop
+    onedrive = os.environ.get("OneDrive", "").strip()
+    if onedrive:
+        od_desktop = os.path.join(onedrive, "Desktop")
+        if os.path.exists(od_desktop):
+            candidates.append(od_desktop)
+
+    # 4. Standard local profile Desktop
+    local_desktop = os.path.join(os.path.expanduser("~"), "Desktop")
+    if os.path.exists(local_desktop):
+        candidates.append(local_desktop)
+
+    # Deduplicate while preserving order (case-insensitive on Windows)
+    seen = set()
+    result = []
+    for c in candidates:
+        norm = os.path.normpath(c).lower()
+        if norm not in seen:
+            seen.add(norm)
+            result.append(c)
+
+    return result or [local_desktop]
+
+
+def get_windows_start_menu_dirs() -> list:
+    r"""
+    Get all active Start Menu Programs directories.
+    Handles Folder Redirection (\\server\userdata$\...\Start Menu\Programs),
+    Roaming Profiles, and local AppData.
+    """
+    candidates = []
+    
+    # 1. Windows Shell API (CSIDL_PROGRAMS = 0x0002)
+    try:
+        import ctypes
+        buf = ctypes.create_unicode_buffer(260)
+        if ctypes.windll.shell32.SHGetFolderPathW(None, 0x0002, None, 0, buf) == 0:
+            val = buf.value.strip()
+            if val and os.path.exists(val):
+                candidates.append(val)
+    except Exception:
+        pass
+
+    # 2. Windows Registry
+    try:
+        import winreg
+        with winreg.OpenKey(winreg.HKEY_CURRENT_USER, r"Software\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders") as k:
+            val, _ = winreg.QueryValueEx(k, "Programs")
+            expanded = os.path.expandvars(val).strip()
+            if expanded and os.path.exists(expanded):
+                candidates.append(expanded)
+    except Exception:
+        pass
+
+    # 3. Local APPDATA Start Menu
+    local_sm = os.path.join(os.environ.get("APPDATA", ""), r"Microsoft\Windows\Start Menu\Programs")
+    if os.path.exists(local_sm):
+        candidates.append(local_sm)
+
+    seen = set()
+    result = []
+    for c in candidates:
+        norm = os.path.normpath(c).lower()
+        if norm not in seen:
+            seen.add(norm)
+            result.append(c)
+
+    return result or [local_sm]
+
+
+def create_windows_shortcut(lnk_path: str, target_exe: str, icon_path: str, description: str) -> bool:
+    """
+    Create Windows .lnk shortcut using native Windows Script Host (cscript) first,
+    falling back to PowerShell. Does not require ExecutionPolicy permissions and
+    functions reliably on UNC domain shares and restricted workstation environments.
+    """
+    import tempfile
+    
+    target_dir = os.path.dirname(lnk_path)
+    os.makedirs(target_dir, exist_ok=True)
+    exe_dir = os.path.dirname(target_exe)
+
+    # Method 1: Windows Script Host (VBScript via cscript) - Built-in, zero policy restriction
+    try:
+        vbs_script = f'''Set oWS = WScript.CreateObject("WScript.Shell")
+sLinkFile = "{lnk_path}"
+Set oLink = oWS.CreateShortcut(sLinkFile)
+oLink.TargetPath = "{target_exe}"
+oLink.WorkingDirectory = "{exe_dir}"
+oLink.IconLocation = "{icon_path}"
+oLink.Description = "{description}"
+oLink.Save
+'''
+        fd, vbs_file = tempfile.mkstemp(suffix=".vbs")
+        with open(fd, "w", encoding="utf-8") as f:
+            f.write(vbs_script)
+        
+        res = subprocess.run(
+            ["cscript", "//nologo", vbs_file],
+            capture_output=True,
+            text=True,
+            creationflags=0x08000000
+        )
+        if os.path.exists(vbs_file):
+            os.remove(vbs_file)
+            
+        if res.returncode == 0 and os.path.exists(lnk_path):
+            return True
+    except Exception:
+        pass
+
+    # Method 2: PowerShell fallback
+    try:
+        lnk_esc = lnk_path.replace("'", "''")
+        target_esc = target_exe.replace("'", "''")
+        dir_esc = exe_dir.replace("'", "''")
+        ico_esc = icon_path.replace("'", "''")
+        desc_esc = description.replace("'", "''")
+        ps_cmd = f"""
+        $ws = New-Object -ComObject WScript.Shell;
+        $s = $ws.CreateShortcut('{lnk_esc}');
+        $s.TargetPath = '{target_esc}';
+        $s.WorkingDirectory = '{dir_esc}';
+        $s.IconLocation = '{ico_esc}';
+        $s.Description = '{desc_esc}';
+        $s.Save();
+        """
+        res = subprocess.run(
+            ["powershell", "-NoProfile", "-NonInteractive", "-ExecutionPolicy", "Bypass", "-Command", ps_cmd],
+            capture_output=True,
+            creationflags=0x08000000
+        )
+        if res.returncode == 0 and os.path.exists(lnk_path):
+            return True
+    except Exception:
+        pass
+
+    return False
+
 class InstallWorker(QThread):
     progress = pyqtSignal(int, str)
     finished = pyqtSignal(bool, str)
@@ -151,28 +321,29 @@ class InstallWorker(QThread):
             if not os.path.exists(ico_path):
                 ico_path = exe_path
 
-            # Create shortcuts via PowerShell
+            # Create shortcuts across all active desktop and start menu directories
+            # (including redirected network shares and local profiles)
             if self.create_desktop:
-                desktop = os.path.join(os.path.expanduser("~"), "Desktop")
-                self._create_shortcut(
-                    os.path.join(desktop, "Ksav Kooker.lnk"),
-                    exe_path,
-                    ico_path,
-                    "Ksav Kooker - Offline Torah Notes OCR Studio"
-                )
+                for d_dir in get_windows_desktop_dirs():
+                    lnk = os.path.join(d_dir, "Ksav Kooker.lnk")
+                    create_windows_shortcut(
+                        lnk,
+                        exe_path,
+                        ico_path,
+                        "Ksav Kooker - Offline Torah Notes OCR Studio"
+                    )
 
             if self.create_startmenu:
-                start_menu = os.path.join(
-                    os.environ.get("APPDATA", ""), 
-                    r"Microsoft\Windows\Start Menu\Programs\Ksav Kooker"
-                )
-                os.makedirs(start_menu, exist_ok=True)
-                self._create_shortcut(
-                    os.path.join(start_menu, "Ksav Kooker.lnk"),
-                    exe_path,
-                    ico_path,
-                    "Ksav Kooker - Offline Torah Notes OCR Studio"
-                )
+                for sm_dir in get_windows_start_menu_dirs():
+                    app_sm = os.path.join(sm_dir, "Ksav Kooker")
+                    os.makedirs(app_sm, exist_ok=True)
+                    lnk = os.path.join(app_sm, "Ksav Kooker.lnk")
+                    create_windows_shortcut(
+                        lnk,
+                        exe_path,
+                        ico_path,
+                        "Ksav Kooker - Offline Torah Notes OCR Studio"
+                    )
 
             # Register in Windows Add/Remove Programs (HKCU Uninstall)
             self._register_uninstall(self.target_dir, exe_path, ico_path)
@@ -595,6 +766,12 @@ class ModernSetupWizard(QWizard):
         lbl_msg.setStyleSheet("color: #334155; font-size: 13px; line-height: 1.5;")
         right_box.addWidget(lbl_msg)
 
+        # Launch checkbox directly on the Finish page
+        self.chk_finish_launch = QCheckBox("Launch Ksav Kooker now")
+        self.chk_finish_launch.setChecked(True)
+        self.chk_finish_launch.setStyleSheet("font-weight: 600; color: #0f172a; font-size: 13px; margin-top: 10px;")
+        right_box.addWidget(self.chk_finish_launch)
+
         right_box.addStretch()
         layout.addLayout(right_box)
         return page
@@ -645,12 +822,29 @@ class ModernSetupWizard(QWizard):
                 cancel_btn.setEnabled(True)
 
     def accept(self):
-        # If launch checked, start app
-        if self.chk_launch.isChecked() and self.installed_exe_path and os.path.exists(self.installed_exe_path):
+        # If launch checked on finish page (or options page), launch detached process with proper cwd
+        should_launch = True
+        if hasattr(self, "chk_finish_launch"):
+            should_launch = self.chk_finish_launch.isChecked()
+        elif hasattr(self, "chk_launch"):
+            should_launch = self.chk_launch.isChecked()
+
+        if should_launch and self.installed_exe_path and os.path.exists(self.installed_exe_path):
             try:
-                os.startfile(self.installed_exe_path)
-            except Exception:
-                pass
+                exe_dir = os.path.dirname(self.installed_exe_path)
+                DETACHED_PROCESS = 0x00000008
+                CREATE_NEW_PROCESS_GROUP = 0x00000200
+                subprocess.Popen(
+                    [self.installed_exe_path],
+                    cwd=exe_dir,
+                    creationflags=DETACHED_PROCESS | CREATE_NEW_PROCESS_GROUP,
+                    close_fds=True
+                )
+            except Exception as err:
+                try:
+                    os.startfile(self.installed_exe_path)
+                except Exception:
+                    pass
         super().accept()
 
 def main():

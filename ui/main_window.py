@@ -108,7 +108,8 @@ class MainWindow(QMainWindow):
         # State
         self.pages: List[Dict[str, Any]] = []
         self.current_page_idx = -1
-        self.is_dark_theme = True
+        self.is_dark_theme = False  # Default to clean, modern Light Mode
+        self._load_theme_setting()
         self.active_worker = None
 
         self._init_ui()
@@ -1012,14 +1013,40 @@ class MainWindow(QMainWindow):
         dlg = AboutDialog(self)
         dlg.exec()
 
+    def _load_theme_setting(self):
+        try:
+            if os.path.exists(SETTINGS_PATH):
+                with open(SETTINGS_PATH, "r", encoding="utf-8") as f:
+                    cfg = json.load(f)
+                    saved_theme = cfg.get("theme", "light")
+                    self.is_dark_theme = (saved_theme == "dark")
+        except Exception:
+            self.is_dark_theme = False
+
+    def _save_theme_setting(self):
+        try:
+            os.makedirs(os.path.dirname(SETTINGS_PATH), exist_ok=True)
+            cfg = {}
+            if os.path.exists(SETTINGS_PATH):
+                with open(SETTINGS_PATH, "r", encoding="utf-8") as f:
+                    cfg = json.load(f)
+            cfg["theme"] = "dark" if self.is_dark_theme else "light"
+            with open(SETTINGS_PATH, "w", encoding="utf-8") as f:
+                json.dump(cfg, f, indent=2, ensure_ascii=False)
+        except Exception:
+            pass
+
     def toggle_theme(self):
         self.is_dark_theme = not self.is_dark_theme
+        self._save_theme_setting()
         self.apply_theme()
 
     def apply_theme(self):
         if self.is_dark_theme:
             self.setStyleSheet(DARK_THEME)
             self.btn_theme.setText("☀")
+            self.btn_theme.setToolTip("Switch to Light Theme")
         else:
             self.setStyleSheet(LIGHT_THEME)
             self.btn_theme.setText("🌙")
+            self.btn_theme.setToolTip("Switch to Dark Theme")

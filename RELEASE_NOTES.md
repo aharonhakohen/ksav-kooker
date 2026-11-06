@@ -1,5 +1,29 @@
 # Release Notes — Ksav Kooker (כתב קוקער)
 
+## [v1.2.1] — 2026-11-05
+
+### Explanatory Title:
+**Light Mode Default UX, Domain Roaming Desktop/Start Menu Shortcuts, and Reliable Process Launching**
+
+### Summary in Plain English:
+Version `v1.2.1` addresses workstation installation issues in Windows Server domain environments (such as Torah U'Mesorah) and switches the default application theme to **Light Mode**. When installing on domain workstations with Folder Redirection or Roaming Profiles, the user's Desktop and Start Menu are often hosted on a network share (e.g. `\\newltcserver\userdata$\<user>\Desktop`). Previous versions attempted to write shortcuts to the local `C:\Users\<user>\Desktop` path, which is hidden by Windows Explorer. Version `v1.2.1` queries the Windows Shell APIs and Registry to resolve redirected network folders, OneDrive, and local paths, installing shortcuts in all active locations using native Windows Script Host (avoiding domain PowerShell restrictions). Furthermore, the installer now launches Ksav Kooker as an independent, detached process with the correct application working directory upon clicking **Finish**.
+
+### What Changed & What Is Included:
+1. **Light Mode Default Interface (`ui/main_window.py`)**:
+   - The application now defaults to crisp, high-contrast Light Mode upon fresh launch.
+   - Theme toggle button prominently displays a moon icon (`🌙`) in Light Mode and a sun icon (`☀`) in Dark Mode.
+   - User theme preferences are automatically saved in `%APPDATA%\KsavKooker\ui_settings.json` and preserved across sessions.
+2. **Windows Server Domain & Folder Redirection Support (`installer/setup_gui.py`)**:
+   - Implemented `get_windows_desktop_dirs()` and `get_windows_start_menu_dirs()` querying `SHGetFolderPathW` (`CSIDL_DESKTOPDIRECTORY`, `CSIDL_PROGRAMS`) and Windows Explorer User Shell Folders.
+   - Accurately detects and installs shortcuts to redirected domain server shares (e.g. `\\newltcserver\userdata$\...\Desktop`), OneDrive, and local directories simultaneously.
+3. **Zero-Dependency Native Shortcut Creation**:
+   - Replaced PowerShell with native Windows Script Host (`cscript //nologo`), ensuring shortcuts are created reliably even on domain workstations with restricted PowerShell execution policies or AppLocker rules.
+4. **Reliable Post-Install App Launching**:
+   - Placed an explicit **"Launch Ksav Kooker now"** checkbox directly on the final wizard page.
+   - Application launch now uses `subprocess.Popen` with `DETACHED_PROCESS` and `CREATE_NEW_PROCESS_GROUP`, explicitly setting `cwd` to the application directory so `KsavKooker.exe` loads its dependencies and stays running when the installer exits.
+
+---
+
 ## [v1.2.0] — 2026-11-05
 
 ### Explanatory Title:
