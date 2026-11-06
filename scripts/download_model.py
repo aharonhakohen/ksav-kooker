@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Helper script to download Ksav Kooker neural OCR model weights (mishkefet-v1.pt)
+Helper script to download Ohr HaKsav neural OCR model weights (mishkefet-v1.pt)
 from GitHub Releases if cloning without Git LFS.
 """
 
@@ -8,7 +8,7 @@ import os
 import sys
 import urllib.request
 
-MODEL_URL = "https://github.com/aharonhakohen/ksav-kooker/releases/download/v1.0.0/mishkefet-v1.pt"
+MODEL_URL = "https://github.com/aharonhakohen/TorahNotesOCR/releases/download/v1.0.0/mishkefet-v1.pt"
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 TARGET_PATH = os.path.join(BASE_DIR, "model_assets", "mishkefet-v1.pt")
 

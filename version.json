@@ -1,20 +1,20 @@
 {
-  "appName": "Ksav Kooker",
-  "appNameHebrew": "כתב קוקער",
-  "tagline": "Offline Torah Notes & Handwriting OCR Studio",
-  "taglineYiddish": "דער קלוגער כתב-קוקער פאר שיעורים און חידושי תורה",
-  "version": "1.2.1",
+  "appName": "Ohr HaKsav",
+  "appNameHebrew": "אור הכתב",
+  "tagline": "Offline Torah Notes & Hebrew Handwriting OCR Studio",
+  "taglineHebrew": "סטודיו אופליין לזיהוי ועריכת כתב יד תורני ומחברות שיעורים",
+  "version": "1.3.0",
   "releaseDate": "2026-11-05",
-  "releaseTitle": "v1.2.1 — Light Mode Default UX, Domain Roaming Desktop/Start Menu Shortcuts, and Reliable Process Launching",
-  "description": "Ksav Kooker (כתב קוקער) v1.2.1 sets Light Mode as the default interface theme, resolves Windows Server domain folder redirection (placing shortcuts on redirected server desktops and Start menus), adds an explicit launch control on the Finish page, and launches via a detached process with proper working directory.",
+  "releaseTitle": "v1.3.0 — Complete Rebrand to 'Ohr HaKsav' (אור הכתב), Workflow Clarity Overhaul & Distraction-Free UI",
+  "description": "Ohr HaKsav (אור הכתב) v1.3.0 establishes the permanent dignified identity of the software with brand-new radiant 3D illumination artwork, renames core workflow buttons to 'Save & Learn Mistakes', hides document stats by default for a clean distraction-free proofreading view (toggleable via View > Show Statistics), adds rich hover ScreenTips across all menus, and retains full backward compatibility for existing profile data.",
   "features": [
-    "Light Mode Default: The application interface now opens in clean, crisp, high-contrast Light Mode by default, with one-click toggle to Dark Mode and persistent preference saving.",
-    "Domain Folder Redirection Support: Desktop and Start Menu shortcut creation now queries Windows Shell APIs to detect redirected server folders (e.g. \\\\newltcserver\\userdata$\\<user>\\Desktop) and OneDrive paths.",
-    "Zero-Dependency Shortcut Engine: Uses native Windows Script Host (VBScript/cscript) rather than PowerShell, bypassing Group Policy and AppLocker restrictions on domain workstations.",
-    "Multi-Location Shortcut Placement: Shortcuts are installed in both redirected network desktop folders and local profile folders so the icon is always visible.",
-    "Reliable Post-Install App Launch: The installer now launches Ksav Kooker in a detached process with its native working directory, ensuring smooth launch upon clicking Finish.",
-    "Finish Page Launch Control: Added an explicit 'Launch Ksav Kooker now' checkbox right on the final installation wizard page.",
-    "In-App Update Checker (Help > Check for Updates... or Ctrl+U): Easily check for updates online or from local network shares.",
-    "100% User Data Isolation: All handwriting profiles, learned mistake rules, backups, and settings in %APPDATA% remain untouched during upgrades."
+    "Permanent Dignified Name: Officially renamed to 'Ohr HaKsav' (אור הכתב - 'Light of the Script'), completely abandoning all prior working titles.",
+    "Brand-New Radiant 3D Emblem: Features an antique Torah manuscript illuminated by a golden ray of light transforming handwritten script into glowing digital typography.",
+    "Workflow Button Clarity ('🎓 Save & Learn Mistakes'): Replaced generic 'Save' with an explicit action button explaining that edits teach the memory engine for future scans.",
+    "Distraction-Free Proofreading Canvas: Stats text underneath the editor (Words, Characters, Lines) is hidden by default and accessible via View > Show Statistics & Details (Ctrl+Shift+S).",
+    "Interactive Workflow Banner: Added a helpful proofreading guide above the editor outlining the 4-step transcription-to-learning process.",
+    "Rich Hover ScreenTips (Industry Standard): Hovering over buttons and menus displays structured cards explaining features, workflow steps, and keyboard shortcuts.",
+    "Full Backward Data Compatibility: Automatically detects and migrates existing handwriting profiles, mistake memories, and backups from %APPDATA%\\KsavKooker to %APPDATA%\\OhrHaKsav without loss.",
+    "Domain Folder Redirection & Light Mode: Includes full support for Windows Server domain shares (\\\\newltcserver\\...) and native Light Mode default."
   ]
 }

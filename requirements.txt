@@ -1,4 +1,4 @@
-# Ksav Kooker - Dependencies
+# Ohr HaKsav (אור הכתב) - Dependencies
 # Python >= 3.10
 PyQt6>=6.6.0
 torch>=2.0.0

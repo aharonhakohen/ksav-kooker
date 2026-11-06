@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Ksav Kooker - Internationalization & UI Localization (i18n)
+Ohr HaKsav - Internationalization & UI Localization (i18n)
 Default language: English ("en").
 Supported languages: English ("en"), Hebrew ("he").
 """
@@ -8,18 +8,30 @@ Supported languages: English ("en"), Hebrew ("he").
 import os
 import json
 
-SETTINGS_PATH = os.path.join(
-    os.environ.get("KSAV_KOOKER_DATA_DIR") or 
-    os.path.join(os.environ.get("APPDATA", os.path.expanduser("~")), "KsavKooker"),
-    "ui_settings.json"
-)
+def get_app_data_dir() -> str:
+    if os.environ.get("OHR_HAKSAV_DATA_DIR"):
+        return os.environ["OHR_HAKSAV_DATA_DIR"]
+    if os.environ.get("KSAV_KOOKER_DATA_DIR"):
+        return os.environ["KSAV_KOOKER_DATA_DIR"]
+    base = os.environ.get("APPDATA", os.path.expanduser("~"))
+    new_dir = os.path.join(base, "OhrHaKsav")
+    old_dir = os.path.join(base, "KsavKooker")
+    if os.path.exists(old_dir) and not os.path.exists(new_dir):
+        try:
+            import shutil
+            shutil.copytree(old_dir, new_dir)
+        except Exception:
+            pass
+    return new_dir
+
+SETTINGS_PATH = os.path.join(get_app_data_dir(), "ui_settings.json")
 
 STRINGS = {
     "en": {
         # App brand
-        "app_title": "Ksav Kooker  •  Offline Torah Notes & Hebrew Handwriting OCR Studio",
-        "brand_name": "Ksav Kooker",
-        "brand_subtitle": "כתב קוקער",
+        "app_title": "Ohr HaKsav  •  Offline Torah Notes & Hebrew Handwriting OCR Studio",
+        "brand_name": "Ohr HaKsav",
+        "brand_subtitle": "אור הכתב",
 
         # Main Menu Bar
         "menu_file": "File",
@@ -47,6 +59,7 @@ STRINGS = {
         "menu_view_zoom_out": "Zoom Out (Ctrl+-)",
         "menu_view_fit": "Fit Window (Ctrl+0)",
         "menu_view_theme": "Toggle Dark / Light Theme (Ctrl+T)",
+        "menu_view_stats": "Show Statistics & Details (Ctrl+Shift+S)",
 
         "menu_language": "Language",
         "menu_lang_en": "English",
@@ -54,7 +67,7 @@ STRINGS = {
 
         "menu_help": "Help",
         "menu_help_guide": "User Guide & Tips (F1)",
-        "menu_help_about": "About Ksav Kooker...",
+        "menu_help_about": "About Ohr HaKsav...",
         "menu_help_check_updates": "Check for Updates... (Ctrl+U)",
 
         # Update Dialog
@@ -64,7 +77,7 @@ STRINGS = {
         "update_curr_version": "Installed Version: v{version}",
         "update_checking_msg": "Checking for updates from {source}...",
         "update_up_to_date_hdr": "You're Running the Latest Version!",
-        "update_up_to_date_sub": "Ksav Kooker v{version} is up to date. No updates are currently needed.",
+        "update_up_to_date_sub": "Ohr HaKsav v{version} is up to date. No updates are currently needed.",
         "update_available_hdr": "⚡ New Version Available: v{version}",
         "update_release_date": "Released: {date}",
         "update_whats_new": "What's New in This Release:",
@@ -82,13 +95,13 @@ STRINGS = {
         "update_source_web": "Official GitHub Cloud (Online)",
         "update_source_web_desc": "Checks GitHub for the latest official public releases (requires internet connection).",
         "update_source_local": "Local Network Share / Folder / USB (Offline & Domain)",
-        "update_source_local_desc": "Checks a local folder or UNC server share (e.g. \\\\newltcserver\\share or M:\\...) containing version.json and KsavKooker_Setup.exe.",
+        "update_source_local_desc": "Checks a local folder or UNC server share (e.g. \\\\newltcserver\\share or M:\\...) containing version.json and OhrHaKsav_Setup.exe.",
         "update_folder_path_lbl": "Network / Local Staging Folder Path:",
         "update_folder_browse_btn": "Browse...",
         "update_auto_check": "Automatically check for updates on startup",
         "update_save_settings_btn": "Save Settings & Check Now",
         "update_prompt_close_title": "Launch Installer",
-        "update_prompt_close_msg": "The installer is about to launch. Would you like to close Ksav Kooker now so the upgrade can proceed smoothly?",
+        "update_prompt_close_msg": "The installer is about to launch. Would you like to close Ohr HaKsav now so the upgrade can proceed smoothly?",
         
         # Top toolbar
         "btn_attach": "📁 Attach Pages",
@@ -101,7 +114,7 @@ STRINGS = {
         "btn_scan_all": "⚡⚡ Scan All Pages",
         "btn_scan_all_tooltip": "Batch-scan all attached notebook pages sequentially",
         "btn_learn": "💾 Save & Learn",
-        "btn_learn_short": "Save",
+        "btn_learn_short": "Save && Learn Mistakes",
         "btn_learn_tooltip": "Save your proofreading edits and absorb corrections into the mistake memory bank",
         "btn_export": "📝 Export to Word (.docx)",
         "btn_export_menu": "Export ▾",
@@ -119,7 +132,7 @@ STRINGS = {
         "btn_lang": "🌐 עברית",
         "btn_lang_tooltip": "Switch UI language to Hebrew / החלף ממשק לעברית",
         "btn_about": "ℹ",
-        "btn_about_tooltip": "About Ksav Kooker and version information",
+        "btn_about_tooltip": "About Ohr HaKsav and version information",
 
         # Sidebar
         "sidebar_title": "Notebook Pages",
@@ -148,6 +161,7 @@ STRINGS = {
         # Editor panel
         "editor_title": "Transcribed Notes & Proofreader (RTL)",
         "editor_quick_abbr": "Top:",
+        "editor_workflow_hint": "💡 Proofreading Workflow: Correct any misread words in the editor, then click '🎓 Save & Learn Mistakes' to train future scans.",
         "editor_more_abbr": "More ▾",
         "abbr_menu_title": "⚡ Torah Abbreviations ▾",
         "abbr_group_seforim": "Seforim & Rishonim (ספרים וראשונים)",
@@ -174,7 +188,7 @@ STRINGS = {
         "export_success_msg": "Document saved successfully to:\n{path}\n\nWould you like to open the document now?",
 
         # Dialogs - Memory & Profiles Studio
-        "dict_window_title": "Memory Studio, Profiles & Backup — Ksav Kooker",
+        "dict_window_title": "Memory Studio, Profiles & Backup — Ohr HaKsav",
         "dict_header_title": "Handwriting Memory & Profile Studio",
         "dict_active_prof_lbl": "Active Profile for editing and learning: {name}",
         "dict_quick_backup_btn": "⚡ Quick Backup",
@@ -232,17 +246,17 @@ STRINGS = {
         "learn_none_msg": "No new corrections detected on this page (everything is already recorded in memory).",
 
         # About Dialog
-        "about_title": "About Ksav Kooker",
+        "about_title": "About Ohr HaKsav",
         "about_version": "Version {version} (Offline Edition)",
-        "about_desc": "Ksav Kooker (כתב קוקער) is an intelligent, 100% offline desktop application built for yeshiva students, rebbeim, and scholars to transcribe handwritten Hebrew notes, proofread side-by-side, and export clean formatted Word documents.",
+        "about_desc": "Ohr HaKsav (אור הכתב) is an intelligent, 100% offline desktop application built for yeshiva students, rebbeim, and scholars to transcribe handwritten Hebrew notes, proofread side-by-side, and export clean formatted Word documents.",
         "about_features": "• 100% Offline PyTorch Neural OCR (Mishkefet-v1)\n• Multi-User Handwriting Profiles & Stacking\n• Self-Learning Mistake Memory Engine\n• Instant One-Click Backup, Restore & Knowledge Merging\n• High-DPI Document Viewer with Ink Enhancer\n• Formatted Right-to-Left Word (.docx) Export"
     },
 
     "he": {
         # App brand
-        "app_title": "כתב קוקער  •  אולפן זיהוי ועריכת כתב יד ושיעורי תורה אופליין",
-        "brand_name": "כתב קוקער",
-        "brand_subtitle": "Ksav Kooker",
+        "app_title": "אור הכתב  •  אולפן זיהוי ועריכת כתב יד ושיעורי תורה אופליין",
+        "brand_name": "אור הכתב",
+        "brand_subtitle": "Ohr HaKsav",
 
         # Main Menu Bar
         "menu_file": "קובץ",
@@ -270,6 +284,7 @@ STRINGS = {
         "menu_view_zoom_out": "הקטן תצוגה (Ctrl+-)",
         "menu_view_fit": "התאם לחלון (Ctrl+0)",
         "menu_view_theme": "החלף ערכת נושא (Ctrl+T)",
+        "menu_view_stats": "הצג סטטיסטיקות ופרטי מסמך (Ctrl+Shift+S)",
 
         "menu_language": "שפה",
         "menu_lang_en": "English (אנגלית)",
@@ -277,7 +292,7 @@ STRINGS = {
 
         "menu_help": "עזרה",
         "menu_help_guide": "מדריך למשתמש וקיצורים (F1)",
-        "menu_help_about": "אודות כתב קוקער...",
+        "menu_help_about": "אודות אור הכתב...",
         "menu_help_check_updates": "בדוק עדכונים... (Ctrl+U)",
 
         # Update Dialog
@@ -287,7 +302,7 @@ STRINGS = {
         "update_curr_version": "גרסה מותקנת: v{version}",
         "update_checking_msg": "בודק עדכונים מתוך {source}...",
         "update_up_to_date_hdr": "התוכנה מעודכנת לחלוטין!",
-        "update_up_to_date_sub": "כתב קוקער גרסה {version} היא הגרסה העדכנית ביותר. אין צורך בעדכון.",
+        "update_up_to_date_sub": "אור הכתב גרסה {version} היא הגרסה העדכנית ביותר. אין צורך בעדכון.",
         "update_available_hdr": "⚡ גרסה חדשה זמינה: v{version}",
         "update_release_date": "תאריך שחרור: {date}",
         "update_whats_new": "מה חדש בגרסה זו:",
@@ -311,7 +326,7 @@ STRINGS = {
         "update_auto_check": "בדוק עדכונים אוטומטית בהפעלת התוכנה",
         "update_save_settings_btn": "שמור הגדרות ובדוק כעת",
         "update_prompt_close_title": "הפעלת התקנה",
-        "update_prompt_close_msg": "אשף ההתקנה עומד לפעול. האם לסגור את כתב קוקער כעת כדי שהעדכון יוכל להתבצע באופן תקין?",
+        "update_prompt_close_msg": "אשף ההתקנה עומד לפעול. האם לסגור את אור הכתב כעת כדי שהעדכון יוכל להתבצע באופן תקין?",
 
         # Top toolbar
         "btn_attach": "📁 צרף תמונות",
@@ -324,7 +339,7 @@ STRINGS = {
         "btn_scan_all": "⚡⚡ סרוק הכל",
         "btn_scan_all_tooltip": "סרוק ברצף את כל העמודים שצורפו",
         "btn_learn": "💾 שמור שינויים",
-        "btn_learn_short": "שמור",
+        "btn_learn_short": "שמור ולמד שגיאות",
         "btn_learn_tooltip": "שומר את העריכה ורושם בזיכרון את כל המילים שתוקנו כדי לתקן אותן אוטומטית בעתיד",
         "btn_export": "📝 ייצוא לוורד (.docx)",
         "btn_export_menu": "ייצוא ▾",
@@ -342,7 +357,7 @@ STRINGS = {
         "btn_lang": "🌐 English",
         "btn_lang_tooltip": "Switch UI language to English / החלף ממשק לאנגלית",
         "btn_about": "ℹ",
-        "btn_about_tooltip": "אודות כתב קוקער ומידע על הגרסה",
+        "btn_about_tooltip": "אודות אור הכתב ומידע על הגרסה",
 
         # Sidebar
         "sidebar_title": "עמודי המחברת",
@@ -397,7 +412,7 @@ STRINGS = {
         "export_success_msg": "המסמך נשמר בהצלחה בנתיב:\n{path}\n\nהאם ברצונך לפתוח את המסמך כעת?",
 
         # Dialogs - Memory & Profiles Studio
-        "dict_window_title": "מנהל הזיכרון, הפרופילים והגיבוי — Ksav Kooker",
+        "dict_window_title": "מנהל הזיכרון, הפרופילים והגיבוי — Ohr HaKsav",
         "dict_header_title": "מנהל זיכרון ופרופילי כתב יד",
         "dict_active_prof_lbl": "פרופיל פעיל לעריכה ושמירה: {name}",
         "dict_quick_backup_btn": "⚡ גבה עכשיו",
@@ -455,9 +470,9 @@ STRINGS = {
         "learn_none_msg": "לא זוהו מילים חדשות ללמידה בעמוד זה (הכל כבר מעודכן בזיכרון).",
 
         # About Dialog
-        "about_title": "אודות כתב קוקער",
+        "about_title": "אודות אור הכתב",
         "about_version": "גרסה {version} (מהדורה אופליין)",
-        "about_desc": "כתב קוקער היא תוכנה חכמה הפועלת 100% אופליין ללא אינטרנט, המיועדת לתלמידי ישיבות, רבנים וחוקרים לפענוח תצלומי מחברות כתב יד עברי, הגהה ועריכה זה לצד זה, וייצוא למסמכי Word מעוצבים.",
+        "about_desc": "אור הכתב היא תוכנה חכמה הפועלת 100% אופליין ללא אינטרנט, המיועדת לתלמידי ישיבות, רבנים וחוקרים לפענוח תצלומי מחברות כתב יד עברי, הגהה ועריכה זה לצד זה, וייצוא למסמכי Word מעוצבים.",
         "about_features": "• מנוע זיהוי עצבי PyTorch אופליין (Mishkefet-v1)\n• ניהול ושילוב פרופילי כתב יד למספר כותבים\n• מנוע זיכרון ולמידה עצמית משגיאות והגהות\n• מרכז גיבוי, שחזור ומיזוג כללים מהיר בלחיצה אחת\n• תצוגת מסמכים חדה ברזולוציה גבוהה עם מחדד דיו\n• ייצוא ישיר למסמכי Microsoft Word (.docx) מעוצבים"
     }
 }

@@ -8,7 +8,7 @@ Supports internationalized English and Hebrew labels.
 
 from PyQt6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QTextEdit, 
-    QLabel, QPushButton, QMenu, QToolButton
+    QLabel, QPushButton, QMenu, QToolButton, QFrame
 )
 from PyQt6.QtCore import Qt, pyqtSignal
 from PyQt6.QtGui import QFont, QTextCursor, QTextOption, QAction
@@ -81,6 +81,8 @@ class HebrewTextEditor(QWidget):
         # Categorized Torah Abbreviations Menu
         self.btn_more_abbr = QToolButton()
         self.btn_more_abbr.setText(t("abbr_menu_title"))
+        if hasattr(self, "lbl_workflow"):
+            self.lbl_workflow.setText(t("editor_workflow_hint"))
         self.btn_more_abbr.setFixedHeight(24)
         self.btn_more_abbr.setStyleSheet("""
             QToolButton {
@@ -157,24 +159,49 @@ class HebrewTextEditor(QWidget):
         self.text_edit.cursorPositionChanged.connect(self._on_cursor_changed)
         layout.addWidget(self.text_edit)
 
-        # Stats bar
-        self.stats_bar = QHBoxLayout()
+        # Workflow Guidance Hint Banner
+        self.workflow_card = QFrame()
+        self.workflow_card.setStyleSheet("""
+            QFrame {
+                background-color: #f8fafc;
+                border: 1px solid #e2e8f0;
+                border-radius: 6px;
+                padding: 2px 6px;
+            }
+        """)
+        wf_box = QHBoxLayout(self.workflow_card)
+        wf_box.setContentsMargins(6, 4, 6, 4)
+        self.lbl_workflow = QLabel(t("editor_workflow_hint"))
+        self.lbl_workflow.setStyleSheet("color: #475569; font-size: 11.5px; font-weight: 500;")
+        self.lbl_workflow.setWordWrap(True)
+        wf_box.addWidget(self.lbl_workflow)
+        layout.addWidget(self.workflow_card)
+
+        # Advanced Stats Bar (Hidden by default, toggleable via View menu)
+        self.stats_widget = QWidget()
+        self.stats_bar = QHBoxLayout(self.stats_widget)
+        self.stats_bar.setContentsMargins(4, 2, 4, 2)
+        
         self.lbl_stats = QLabel("")
-        self.lbl_stats.setStyleSheet("color: #a6adc8; font-size: 11px;")
+        self.lbl_stats.setStyleSheet("color: #64748b; font-size: 11px;")
         
         self.lbl_corrections = QLabel("")
-        self.lbl_corrections.setStyleSheet("color: #a6e3a1; font-weight: bold; font-size: 11px;")
+        self.lbl_corrections.setStyleSheet("color: #059669; font-weight: bold; font-size: 11px;")
 
         self.stats_bar.addWidget(self.lbl_stats)
         self.stats_bar.addStretch()
         self.stats_bar.addWidget(self.lbl_corrections)
-        layout.addLayout(self.stats_bar)
+        
+        self.stats_widget.setVisible(False)  # Hidden by default!
+        layout.addWidget(self.stats_widget)
         
         self._update_stats()
 
     def retranslate_ui(self):
         self.lbl_quick.setText(t("editor_quick_abbr"))
         self.btn_more_abbr.setText(t("abbr_menu_title"))
+        if hasattr(self, "lbl_workflow"):
+            self.lbl_workflow.setText(t("editor_workflow_hint"))
         self._update_stats()
 
     def insert_text(self, text: str):
@@ -200,6 +227,17 @@ class HebrewTextEditor(QWidget):
         cursor = self.text_edit.textCursor()
         line_num = cursor.blockNumber()
         self.line_focused.emit(line_num)
+
+
+    def set_stats_visible(self, visible: bool):
+        """Toggle visibility of document statistics underneath the editor."""
+        if hasattr(self, 'stats_widget'):
+            self.stats_widget.setVisible(visible)
+
+    def is_stats_visible(self) -> bool:
+        if hasattr(self, 'stats_widget'):
+            return not self.stats_widget.isHidden()
+        return False
 
     def _update_stats(self):
         text = self.text_edit.toPlainText()

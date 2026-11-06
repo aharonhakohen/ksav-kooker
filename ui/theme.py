@@ -13,6 +13,17 @@ QWidget {
 }
 
 
+
+/* ToolTip Card */
+QToolTip {
+    background-color: #1e1e2e;
+    color: #cdd6f4;
+    border: 1px solid #45475a;
+    border-radius: 6px;
+    padding: 8px 12px;
+    font-size: 12px;
+}
+
 /* Menu Bar */
 QMenuBar {
     background-color: #1e1e2e;
@@ -310,6 +321,17 @@ QWidget {
     color: #1e293b;
     font-family: 'Segoe UI', 'David', 'Arial', sans-serif;
     font-size: 13px;
+}
+
+
+/* ToolTip Card */
+QToolTip {
+    background-color: #ffffff;
+    color: #0f172a;
+    border: 1px solid #94a3b8;
+    border-radius: 6px;
+    padding: 8px 12px;
+    font-size: 12px;
 }
 
 /* Menu Bar */

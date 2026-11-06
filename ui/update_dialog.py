@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 r"""
-Ksav Kooker - Modern Update Checker & Source Configuration Dialog
+Ohr HaKsav - Modern Update Checker & Source Configuration Dialog
 Supports checking for updates via:
   1. Official GitHub Cloud (https://raw.githubusercontent.com/.../version.json)
   2. Local Network Share / Windows Server Domain Share / USB / Offline folder
-     (e.g. \\newltcserver\Installs\KsavKooker or M:\My Drive\... containing version.json & KsavKooker_Setup.exe)
+     (e.g. \\newltcserver\Installs\OhrHaKsav or M:\My Drive\... containing version.json & OhrHaKsav_Setup.exe)
 """
 
 import os
@@ -25,8 +25,8 @@ from ui.i18n import t, SETTINGS_PATH, get_current_language
 from installer.setup_gui import get_resource_path
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-DEFAULT_ONLINE_URL = "https://raw.githubusercontent.com/aharonhakohen/ksav-kooker/main/public/version.json"
-DEFAULT_RELEASE_URL = "https://github.com/aharonhakohen/ksav-kooker/releases"
+DEFAULT_ONLINE_URL = "https://raw.githubusercontent.com/aharonhakohen/TorahNotesOCR/main/public/version.json"
+DEFAULT_RELEASE_URL = "https://github.com/aharonhakohen/TorahNotesOCR/releases"
 
 
 def get_current_app_version() -> str:
@@ -85,14 +85,14 @@ class CheckUpdateWorker(QThread):
                     data = json.load(f)
 
                 # Check if setup exe is also in this folder
-                setup_exe = os.path.join(folder, "KsavKooker_Setup.exe")
+                setup_exe = os.path.join(folder, "OhrHaKsav_Setup.exe")
                 data["_local_setup_path"] = setup_exe if os.path.exists(setup_exe) else ""
                 data["_source_folder"] = folder
 
             else:
                 # Online GitHub raw JSON
                 url = self.source_path.strip() or DEFAULT_ONLINE_URL
-                req = urllib.request.Request(url, headers={"User-Agent": "KsavKooker-Updater/1.1"})
+                req = urllib.request.Request(url, headers={"User-Agent": "OhrHaKsav-Updater/1.3"})
                 with urllib.request.urlopen(req, timeout=8) as resp:
                     raw = resp.read().decode("utf-8")
                     data = json.loads(raw)
@@ -125,7 +125,7 @@ class UpdateDialog(QDialog):
         self.setMinimumSize(560, 420)
 
         # Icon
-        icon_path = get_resource_path(os.path.join("assets", "ksav_kooker.ico"))
+        icon_path = get_resource_path(os.path.join("assets", "ohr_haksav.ico"))
         if os.path.exists(icon_path):
             self.setWindowIcon(QIcon(icon_path))
 
@@ -225,7 +225,7 @@ class UpdateDialog(QDialog):
         hdr_layout = QHBoxLayout(hdr_frame)
         hdr_layout.setSpacing(14)
 
-        logo_path = get_resource_path(os.path.join("assets", "ksav_kooker.png"))
+        logo_path = get_resource_path(os.path.join("assets", "ohr_haksav.png"))
         if os.path.exists(logo_path):
             lbl_ico = QLabel()
             pix = QPixmap(logo_path).scaled(42, 42, Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation)
@@ -235,7 +235,7 @@ class UpdateDialog(QDialog):
 
         v_box = QVBoxLayout()
         v_box.setSpacing(2)
-        lbl_app = QLabel("<b>Ksav Kooker (כתב קוקער)</b>")
+        lbl_app = QLabel("<b>Ohr HaKsav (אור הכתב)</b>")
         lbl_app.setStyleSheet("font-size: 15px; color: #0f172a;")
         v_box.addWidget(lbl_app)
 
@@ -339,7 +339,7 @@ class UpdateDialog(QDialog):
         folder_box = QHBoxLayout()
         folder_box.setContentsMargins(22, 0, 0, 0)
         self.txt_local_path = QLineEdit(self.source_local_path)
-        self.txt_local_path.setPlaceholderText(r"e.g. \\newltcserver\Installs\KsavKooker or M:\My Drive\...")
+        self.txt_local_path.setPlaceholderText(r"e.g. \\newltcserver\Installs\OhrHaKsav or M:\My Drive\...")
         folder_box.addWidget(self.txt_local_path)
 
         btn_browse = QPushButton(t("update_folder_browse_btn"))
@@ -474,7 +474,7 @@ class UpdateDialog(QDialog):
             <p><b>{t('update_err_hdr')}</b></p>
             <p style="color: #475569;">{err_msg}</p>
             <p style="color: #64748b; font-size: 12px;">
-                Tip: If working offline or in a Windows Server domain environment, open the <b>Update Source & Settings</b> tab to specify a local network folder or USB path containing version.json and KsavKooker_Setup.exe.
+                Tip: If working offline or in a Windows Server domain environment, open the <b>Update Source & Settings</b> tab to specify a local network folder or USB path containing version.json and OhrHaKsav_Setup.exe.
             </p>
         </div>
         """
@@ -483,7 +483,7 @@ class UpdateDialog(QDialog):
     def _run_local_installer(self):
         setup_exe = self.latest_data.get("_local_setup_path", "")
         if not setup_exe or not os.path.exists(setup_exe):
-            QMessageBox.warning(self, "Setup Not Found", f"KsavKooker_Setup.exe was not found in: {self.latest_data.get('_source_folder', '')}")
+            QMessageBox.warning(self, "Setup Not Found", f"OhrHaKsav_Setup.exe was not found in: {self.latest_data.get('_source_folder', '')}")
             return
 
         reply = QMessageBox.question(
